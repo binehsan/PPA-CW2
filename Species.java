@@ -1,8 +1,29 @@
 public class Species {
-    protected Location location;
+    // The animal's position.
+    private Location location;
+    // Whether the animal is alive or not.
+    private boolean alive;
 
     public Species(Location location) {
         this.location = location;
+    }
+
+    /**
+     * Check whether the animal is alive or not.
+     * @return true if the animal is still alive.
+     */
+    public boolean isAlive()
+    {
+        return alive;
+    }
+
+    /**
+     * Indicate that the animal is no longer alive.
+     */
+    protected void setDead()
+    {
+        alive = false;
+        setLocation(null);
     }
 
     /**

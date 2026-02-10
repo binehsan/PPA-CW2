@@ -1,4 +1,4 @@
-
+import java.util.*;
 /**
  * Common elements of foxes and rabbits.
  *
@@ -7,9 +7,8 @@
  */
 public abstract class Animal extends Species
 {
-    // Whether the animal is alive or not.
-    private boolean alive;
-    // The animal's position.
+
+    private int energyLevel;
 
     /**
      * Constructor for objects of class Animal.
@@ -18,7 +17,6 @@ public abstract class Animal extends Species
     public Animal(Location location)
     {
         super(location);
-        this.alive = true;
     }
     
     /**
@@ -27,22 +25,4 @@ public abstract class Animal extends Species
      * @param nextFieldState The new state being built.
      */
     abstract public void act(Field currentField, Field nextFieldState);
-    
-    /**
-     * Check whether the animal is alive or not.
-     * @return true if the animal is still alive.
-     */
-    public boolean isAlive()
-    {
-        return alive;
-    }
-
-    /**
-     * Indicate that the animal is no longer alive.
-     */
-    protected void setDead()
-    {
-        alive = false;
-        setLocation();
-    }
 }
