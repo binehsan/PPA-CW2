@@ -2,7 +2,7 @@ import java.util.*;
 /**
  * Common elements of foxes and rabbits.
  *
- * @author David J. Barnes and Michael Kölling
+ * @author Faisal AlKhalifa and Muhammad Amen bin Ehsan
  * @version 7.0
  */
 public abstract class Animal extends Species

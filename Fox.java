@@ -59,6 +59,8 @@ public class Fox extends Animal
      * @param currentField The field currently occupied.
      * @param nextFieldState The updated field.
      */
+
+    // MOVE TO ANIMAL*
     public void act(Field currentField, Field nextFieldState)
     {
         incrementAge();
