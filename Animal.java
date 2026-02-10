@@ -5,12 +5,11 @@
  * @author David J. Barnes and Michael Kölling
  * @version 7.0
  */
-public abstract class Animal
+public abstract class Animal extends Species
 {
     // Whether the animal is alive or not.
     private boolean alive;
     // The animal's position.
-    private Location location;
 
     /**
      * Constructor for objects of class Animal.
@@ -18,8 +17,8 @@ public abstract class Animal
      */
     public Animal(Location location)
     {
+        super(location);
         this.alive = true;
-        this.location = location;
     }
     
     /**
@@ -44,24 +43,6 @@ public abstract class Animal
     protected void setDead()
     {
         alive = false;
-        location = null;
-    }
-    
-    /**
-     * Return the animal's location.
-     * @return The animal's location.
-     */
-    public Location getLocation()
-    {
-        return location;
-    }
-    
-    /**
-     * Set the animal's location.
-     * @param location The new location.
-     */
-    protected void setLocation(Location location)
-    {
-        this.location = location;
+        setLocation();
     }
 }
