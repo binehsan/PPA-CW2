@@ -12,7 +12,7 @@ import java.util.Random;
 public class Falcon extends Animal
 {
     //COME UP WITH SOLUTION
-    private static final Class<?>[] preys = {};
+    private static final Class<?>[] preys = {Snake.class, Lizard.class};
 
     private static final Class<?>[] predators = {};
 
@@ -31,11 +31,6 @@ public class Falcon extends Animal
 
     // Individual characteristics (instance fields).
 
-    // The fox's age.
-    private int age;
-    // The fox's food level, which is increased by eating rabbits.
-    private int energyLevel;
-
     /**
      * Create a fox. A fox can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
@@ -45,14 +40,7 @@ public class Falcon extends Animal
      */
     public Falcon(boolean randomAge, Location location)
     {
-        super(location);
-        if(randomAge) {
-            age = rand.nextInt(MAX_AGE);
-        }
-        else {
-            age = 0;
-        }
-        energyLevel = rand.nextInt(RABBIT_FOOD_VALUE);
+        super(location, randomAge, MAX_ENERGY);
     }
     
     /**
