@@ -28,6 +28,11 @@ public class Falcon extends Animal
 
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
+    public static final int visibility = 2;
+    public static final int MAX_ENERGY = 20;
+
+    public static final int REST_THRESHOLD = 5;
+
 
     // Individual characteristics (instance fields).
 
@@ -41,12 +46,33 @@ public class Falcon extends Animal
     public Falcon(boolean randomAge, Location location)
     {
         super(location, randomAge, MAX_ENERGY);
+        if(randomAge) {
+            setAge(rand.nextInt(MAX_AGE));
+        }
+        else {
+            setAge(0);
+        }
     }
-    
+
+    public int getVisibility() {
+        return visibility;
+    }
+
+    public Class<?>[] getPredators(){
+        return predators;
+    }
+
+    public int getRestThreshold(){
+        return REST_THRESHOLD;
+    }
+
+    public Class<?>[] getPrey(){
+        return preys;
+    }
+
+
+
     /**
-     * This is what the fox does most of the time: it hunts for
-     * rabbits. In the process, it might breed, die of hunger,
-     * or die of old age.
      * @param currentField The field currently occupied.
      * @param nextFieldState The updated field.
      */
@@ -54,28 +80,43 @@ public class Falcon extends Animal
     {
         incrementAge();
         incrementHunger();
-        if(isAlive()) {
-            List<Location> freeLocations =
-                    nextFieldState.getFreeAdjacentLocations(getLocation());
-            if(! freeLocations.isEmpty()) {
-                giveBirth(nextFieldState, freeLocations);
-            }
-            // Move towards a source of food if found.
-            Location nextLocation = findFood(currentField);
-            if(nextLocation == null && ! freeLocations.isEmpty()) {
-                // No food found - try to move to a free location.
-                nextLocation = freeLocations.remove(0);
-            }
-            // See if it was possible to move.
-            if(nextLocation != null) {
-                setLocation(nextLocation);
-                nextFieldState.placeAnimal(this, nextLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
+        if(! isAlive()) {
+            return;
         }
+
+
+        // tryFlee()
+        // tryRest()
+
+
+        List<Location> freeLocations =
+                nextFieldState.getFreeAdjacentLocations(getLocation(), 1);
+
+        // fleeing - NO NEED.
+
+
+
+
+
+        if(! freeLocations.isEmpty()) {
+            giveBirth(nextFieldState, freeLocations);
+        }
+        // Move towards a source of food if found.
+        Location nextLocation = findFood(currentField);
+        if(nextLocation == null && ! freeLocations.isEmpty()) {
+            // No food found - try to move to a free location.
+            nextLocation = freeLocations.remove(0);
+        }
+        // See if it was possible to move.
+        if(nextLocation != null) {
+            setLocation(nextLocation);
+            nextFieldState.placeAnimal(this, nextLocation);
+        }
+        else {
+            // Overcrowding.
+            setDead();
+        }
+
     }
 
 
