@@ -32,6 +32,7 @@ public class Falcon extends Animal
     public static final int MAX_ENERGY = 20;
 
     public static final int REST_THRESHOLD = 5;
+    public static final int BREEDING_THRESHOLD = 10;
 
 
     // Individual characteristics (instance fields).
@@ -46,12 +47,10 @@ public class Falcon extends Animal
     public Falcon(boolean randomAge, Location location, int gender)
     {
         super(location, gender, randomAge, MAX_ENERGY);
-        if(randomAge) {
-            setAge(rand.nextInt(MAX_AGE));
-        }
-        else {
-            setAge(0);
-        }
+    }
+
+    public int getBreedingAge() {
+        return BREEDING_AGE;
     }
 
     public int getVisibility() {
@@ -66,6 +65,10 @@ public class Falcon extends Animal
         return REST_THRESHOLD;
     }
 
+    public int getBreedThreshold(){
+        return BREEDING_THRESHOLD;
+    }
+
     @Override
     public int getMaxAge() {
         return MAX_AGE;
@@ -75,137 +78,26 @@ public class Falcon extends Animal
         return MAX_OFFSPRINGS;
     }
 
+    public double getBreedingProbability() {
+        return MAX_OFFSPRINGS;
+    }
+
     public Class<?>[] getPrey(){
         return preys;
     }
 
-
-
-    /**
-     * @param currentField The field currently occupied.
-     * @param nextFieldState The updated field.
-     */
-    public void act(Field currentField, Field nextFieldState)
-    {
-        incrementAge();
-        incrementHunger();
-        if(! isAlive()) {
-            return;
-        }
-
-
-        // tryFlee()
-        // tryRest()
-
-
-        List<Location> freeLocations =
-                nextFieldState.getFreeAdjacentLocations(getLocation(), 1);
-
-        // fleeing - NO NEED.
-
-
-
-
-
-        if(! freeLocations.isEmpty()) {
-            giveBirth(nextFieldState, freeLocations);
-        }
-        // Move towards a source of food if found.
-        Location nextLocation = findFood(currentField);
-        if(nextLocation == null && ! freeLocations.isEmpty()) {
-            // No food found - try to move to a free location.
-            nextLocation = freeLocations.remove(0);
-        }
-        // See if it was possible to move.
-        if(nextLocation != null) {
-            setLocation(nextLocation);
-            nextFieldState.placeAnimal(this, nextLocation);
-        }
-        else {
-            // Overcrowding.
-            setDead();
-        }
-
+    public Random getRand() {
+        return rand;
     }
 
 
-
-    @Override
-    public String toString() {
-        return "Fox{" +
-                "age=" + age +
-                ", alive=" + isAlive() +
-                ", location=" + getLocation() +
-                ", foodLevel=" + energyLevel +
-                '}';
-    }
-    
-    /**
-     * Look for rabbits adjacent to the current location.
-     * Only the first live rabbit is eaten.
-     * @param field The field currently occupied.
-     * @return Where food was found, or null if it wasn't.
-     */
-    private Location findFood(Field field)
-    {
-        List<Location> adjacent = field.getAdjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        Location foodLocation = null;
-        while(foodLocation == null && it.hasNext()) {
-            Location loc = it.next();
-            Animal animal = field.getAnimalAt(loc);
-            if(animal instanceof Rabbit rabbit) {
-                if(rabbit.isAlive()) {
-                    rabbit.setDead();
-                    energyLevel = RABBIT_FOOD_VALUE;
-                    foodLocation = loc;
-                }
-            }
-        }
-        return foodLocation;
-    }
-    
-    /**
-     * Check whether this fox is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param freeLocations The locations that are free in the current field.
-     */
-    private void giveBirth(Field nextFieldState, List<Location> freeLocations)
-    {
-        // New foxes are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        int births = breed();
-        if(births > 0) {
-            for (int b = 0; b < births && ! freeLocations.isEmpty(); b++) {
-                Location loc = freeLocations.remove(0);
-                Falcon young = new Falcon(false, loc);
-                nextFieldState.placeAnimal(young, loc);
-            }
-        }
-    }
-        
-    /**
-     * Generate a number representing the number of births,
-     * if it can breed.
-     * @return The number of births (may be zero).
-     */
-    private int breed()
-    {
-        int births;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_OFFSPRINGS) + 1;
-        }
-        else {
-            births = 0;
-        }
-        return births;
-    }
-
-    /**
-     * A fox can breed if it has reached the breeding age.
-     */
-    private boolean canBreed()
-    {
-        return age >= BREEDING_AGE;
-    }
+//    @Override
+//    public String toString() {
+//        return "Fox{" +
+//                "age=" + age +
+//                ", alive=" + isAlive() +
+//                ", location=" + getLocation() +
+//                ", foodLevel=" + energyLevel +
+//                '}';
+//    }
 }

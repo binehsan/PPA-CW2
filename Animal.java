@@ -21,7 +21,13 @@ public abstract class Animal extends Species
     public Animal(Location location, int gender, boolean randomAge, int MAX_ENERGY_LEVEL)
     {
         super(location);
-        //removed age logic
+
+        if(randomAge) {
+            setAge(this.getRand().nextInt(this.getMaxAge()));
+        }
+        else {
+            setAge(0);
+        }
 
         energyLevel = MAX_ENERGY_LEVEL;
         this.gender = gender;
@@ -78,9 +84,15 @@ public abstract class Animal extends Species
     abstract public Class<?>[] getPrey();
 
     abstract public int getRestThreshold();
+    abstract public int getBreedingAge();
+    abstract public int getBreedThreshold();
     abstract public int getMaxAge();
 
     abstract public int getMaxOffspring();
+
+    abstract public double getBreedingProbability();
+
+    abstract public Random getRand();
 
 
 
@@ -152,21 +164,26 @@ public abstract class Animal extends Species
 
 
     public boolean tryBreed(Location location, Field currentField){
-        // Check if this is a male ✅
-        // Check for other female of the same species around it
-        //Get free spaces
-            //
+
+        if (this.getAge() < this.getBreedingAge()) return false;
+
         if (this.getGender() == 1) return false;    // skip if female
+
+        if (energyLevel < this.getBreedThreshold()) return false;
 
         List<Location> adjacentSpaces = currentField.getAdjacentLocations(location, this.getVisibility());
         for (Location adjacent : adjacentSpaces) {
             Animal tempAnimal = currentField.getAnimalAt(adjacent);
+
+            if (tempAnimal.getAge() < tempAnimal.getBreedingAge()) continue;
+
             if (tempAnimal.getClass().equals(this.getClass()) && tempAnimal.getGender() == 1) {
                 List<Location> freeSpaces = currentField.getFreeAdjacentLocations(location, this.getVisibility());
 
                 //number of offsprings
                 for (int i=0; i < Math.min(freeSpaces.size(), this.getMaxOffspring()); i++) {
                     //breed at freeSpaces.get(i)
+                    if (this.getRand().nextDouble() > this.getBreedingProbability()) continue;
 
                     //Change to use BiFunction functional interface
 
@@ -183,8 +200,11 @@ public abstract class Animal extends Species
                         currentField.placeAnimal(offspring, freeSpaces.get(i));
                     } catch (Exception error) {
                         error.printStackTrace();
+                        return false;
                     }
                 }
+
+                return true;
 
             }
         }
