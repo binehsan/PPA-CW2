@@ -51,15 +51,37 @@ public abstract class Animal extends Species
         this.age = age;
     }
 
+    /**
+     * Increase the age. This could result in the fox's death.
+     */
+    private void incrementAge(int MAX_AGE)
+    {
+        age++;
+        if(age > MAX_AGE) {
+            setDead();
+        }
+    }
+
+    /**
+     * Make this fox more hungry. This could result in the fox's death.
+     */
+    private void incrementHunger()
+    {
+        energyLevel--;
+        if(energyLevel <= 0) {
+            setDead();
+        }
+    }
 
     abstract public int getVisibility();
     abstract public Class<?>[] getPredators();
     abstract public Class<?>[] getPrey();
 
     abstract public int getRestThreshold();
+    abstract public int getMaxAge();
 
-    abstract public void incrementAge();
-    abstract public void incrementHunger();
+    abstract public int getMaxOffspring();
+
 
 
     /**
@@ -128,6 +150,49 @@ public abstract class Animal extends Species
         return false;
     }
 
+
+    public boolean tryBreed(Location location, Field currentField){
+        // Check if this is a male ✅
+        // Check for other female of the same species around it
+        //Get free spaces
+            //
+        if (this.getGender() == 1) return false;    // skip if female
+
+        List<Location> adjacentSpaces = currentField.getAdjacentLocations(location, this.getVisibility());
+        for (Location adjacent : adjacentSpaces) {
+            Animal tempAnimal = currentField.getAnimalAt(adjacent);
+            if (tempAnimal.getClass().equals(this.getClass()) && tempAnimal.getGender() == 1) {
+                List<Location> freeSpaces = currentField.getFreeAdjacentLocations(location, this.getVisibility());
+
+                //number of offsprings
+                for (int i=0; i < Math.min(freeSpaces.size(), this.getMaxOffspring()); i++) {
+                    //breed at freeSpaces.get(i)
+
+                    //Change to use BiFunction functional interface
+
+                    try {
+                        Class<?> tempClass = this.getClass();
+                        Animal offspring = (Animal) tempClass
+                                .getDeclaredConstructor(boolean.class, Location.class , int.class)
+                                .newInstance(
+                                        false,
+                                        freeSpaces.get(i),
+                                        new Random().nextInt(2)   // random gender 0 or 1
+                                );
+
+                        currentField.placeAnimal(offspring, freeSpaces.get(i));
+                    } catch (Exception error) {
+                        error.printStackTrace();
+                    }
+                }
+
+            }
+        }
+
+        return false;
+    }
+
+
     public boolean tryWander(Location location, Field currentField){
         List<Location> freeLocations =
                 currentField.getFreeAdjacentLocations(getLocation(), 1);
@@ -150,22 +215,24 @@ public abstract class Animal extends Species
 
     public void act(Field currentField, Field nextFieldState)
     {
-        incrementAge();
+        incrementAge(this.getMaxAge());
         incrementHunger();
         if(! isAlive()) {
             return;
         }
 
+        // Fix this
         if (tryFlee(this.getLocation(), currentField)) {
             return;
         } else if (tryRest(this.getLocation(), currentField)) {
             return;
         } else if (tryHunt(this.getLocation(), currentField)) {
             return;
+        } else if (tryBreed(this.getLocation(), currentField)) {
+            return;
         } else {
             tryWander(this.getLocation(), currentField);
         }
-
     }
 
 

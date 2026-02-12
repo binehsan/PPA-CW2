@@ -43,9 +43,9 @@ public class Falcon extends Animal
      * @param randomAge If true, the fox will have random age and hunger level.
      * @param location The location within the field.
      */
-    public Falcon(boolean randomAge, Location location)
+    public Falcon(boolean randomAge, Location location, int gender)
     {
-        super(location, randomAge, MAX_ENERGY);
+        super(location, gender, randomAge, MAX_ENERGY);
         if(randomAge) {
             setAge(rand.nextInt(MAX_AGE));
         }
@@ -64,6 +64,15 @@ public class Falcon extends Animal
 
     public int getRestThreshold(){
         return REST_THRESHOLD;
+    }
+
+    @Override
+    public int getMaxAge() {
+        return MAX_AGE;
+    }
+
+    public int getMaxOffspring() {
+        return MAX_OFFSPRINGS;
     }
 
     public Class<?>[] getPrey(){
@@ -129,28 +138,6 @@ public class Falcon extends Animal
                 ", location=" + getLocation() +
                 ", foodLevel=" + energyLevel +
                 '}';
-    }
-
-    /**
-     * Increase the age. This could result in the fox's death.
-     */
-    private void incrementAge()
-    {
-        age++;
-        if(age > MAX_AGE) {
-            setDead();
-        }
-    }
-    
-    /**
-     * Make this fox more hungry. This could result in the fox's death.
-     */
-    private void incrementHunger()
-    {
-        energyLevel--;
-        if(energyLevel <= 0) {
-            setDead();
-        }
     }
     
     /**
