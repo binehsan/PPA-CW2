@@ -1,5 +1,3 @@
-import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -16,23 +14,15 @@ public class Falcon extends Animal
 
     private static final Class<?>[] predators = {};
 
-    // Characteristics shared by all foxes (class variables).
-    // The age at which a fox can start to breed.
-    private static final int BREEDING_AGE = 15;
-    // The age to which a fox can live.
-    private static final int MAX_AGE = 150;
-    // The likelihood of a fox breeding.
-    private static final double BREEDING_PROBABILITY = 0.08;
-    // The maximum number of births.
-    private static final int MAX_OFFSPRINGS = 2;
+    private static final SpeciesConfig CONFIG = SimulationConfig.FALCON;
 
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
-    public static final int visibility = 2;
-    public static final int MAX_ENERGY = 20;
+    public static final int visibility = CONFIG.visibility();
+    public static final int MAX_ENERGY = CONFIG.maxEnergy();
 
-    public static final int REST_THRESHOLD = 5;
-    public static final int BREEDING_THRESHOLD = 10;
+    public static final int REST_THRESHOLD = CONFIG.restThreshold();
+    public static final int BREEDING_THRESHOLD = CONFIG.breedingThreshold();
 
 
     // Individual characteristics (instance fields).
@@ -44,13 +34,13 @@ public class Falcon extends Animal
      * @param randomAge If true, the fox will have random age and hunger level.
      * @param location The location within the field.
      */
-    public Falcon(boolean randomAge, Location location, int gender)
+    public Falcon(boolean randomAge, Location location)
     {
-        super(location, gender, randomAge, MAX_ENERGY);
+        super(location, randomAge, MAX_ENERGY);
     }
 
     public int getBreedingAge() {
-        return BREEDING_AGE;
+        return CONFIG.breedingAge();
     }
 
     public int getVisibility() {
@@ -69,17 +59,16 @@ public class Falcon extends Animal
         return BREEDING_THRESHOLD;
     }
 
-    @Override
     public int getMaxAge() {
-        return MAX_AGE;
+        return CONFIG.maxAge();
     }
 
     public int getMaxOffspring() {
-        return MAX_OFFSPRINGS;
+        return CONFIG.maxOffspring();
     }
 
     public double getBreedingProbability() {
-        return MAX_OFFSPRINGS;
+        return CONFIG.breedingProbability();
     }
 
     public Class<?>[] getPrey(){
@@ -89,15 +78,4 @@ public class Falcon extends Animal
     public Random getRand() {
         return rand;
     }
-
-
-//    @Override
-//    public String toString() {
-//        return "Fox{" +
-//                "age=" + age +
-//                ", alive=" + isAlive() +
-//                ", location=" + getLocation() +
-//                ", foodLevel=" + energyLevel +
-//                '}';
-//    }
 }

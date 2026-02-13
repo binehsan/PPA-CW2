@@ -10,7 +10,6 @@ public abstract class Animal extends Species
 
     private int energyLevel;
     private int age;
-
     // Male = 0, Female = 1
     private int gender;
 
@@ -18,22 +17,29 @@ public abstract class Animal extends Species
      * Constructor for objects of class Animal.
      * @param location The animal's location.
      */
-    public Animal(Location location, int gender, boolean randomAge, int MAX_ENERGY_LEVEL)
+    public Animal(Location location, boolean randomAge, int MAX_ENERGY_LEVEL)
     {
         super(location);
 
         if(randomAge) {
-            setAge(this.getRand().nextInt(this.getMaxAge()));
+            int maxInitialAge = Math.max(1, this.getMaxAge() / 2);
+            setAge(this.getRand().nextInt(maxInitialAge));
         }
         else {
             setAge(0);
         }
 
         energyLevel = MAX_ENERGY_LEVEL;
-        this.gender = gender;
+        this.gender = this.getRand().nextInt(2);
     }
 
     public int getEnergyLevel() {
+        return energyLevel;
+    }
+
+    @Override
+    public int getEnergyValue()
+    {
         return energyLevel;
     }
 
@@ -112,12 +118,11 @@ public abstract class Animal extends Species
                     Location nextLocation = null;
                     if(! freeLocations.isEmpty()) {
                         // No food found - try to move to a free location.
-                        nextLocation = freeLocations.remove(0);
+                        nextLocation = freeLocations.removeFirst();
                     }
                     // See if it was possible to move.
                     if(nextLocation != null) {
                         setLocation(nextLocation);
-                         currentField.placeAnimal(this, nextLocation);
                     }
                     else {
                         // Overcrowding.
@@ -145,14 +150,17 @@ public abstract class Animal extends Species
     public boolean tryHunt(Location location, Field currentField){
         List<Location> adjacentSpaces = currentField.getAdjacentLocations(location, this.getVisibility());
         for (Location adjacent : adjacentSpaces) {
-            Animal tempAnimal = currentField.getAnimalAt(adjacent);
+            Species target = currentField.getSpeciesAt(adjacent);
             for (Class<?> prey : this.getPrey()) {
-                if (prey.isInstance(tempAnimal)) {
+                if (prey.isInstance(target)) {
                     // take energy level, move to its location.
-                     this.setEnergyLevel(this.getEnergyLevel() + tempAnimal.getEnergyLevel());
-                     tempAnimal.setDead();
-                     this.setLocation(tempAnimal.getLocation());
-                     currentField.placeAnimal(this, tempAnimal.getLocation());
+                     this.setEnergyLevel(this.getEnergyLevel() + target.getEnergyValue());
+                     if (target instanceof Plant plant) {
+                         plant.harvest();
+                     } else if (target instanceof Animal animal) {
+                         animal.setDead();
+                     }
+                     this.setLocation(target.getLocation());
 
                     return true;
                 }
@@ -163,7 +171,7 @@ public abstract class Animal extends Species
     }
 
 
-    public boolean tryBreed(Location location, Field currentField){
+    public boolean tryBreed(Location location, Field currentField, Field nextFieldState){
 
         if (this.getAge() < this.getBreedingAge()) return false;
 
@@ -175,6 +183,7 @@ public abstract class Animal extends Species
         for (Location adjacent : adjacentSpaces) {
             Animal tempAnimal = currentField.getAnimalAt(adjacent);
 
+            if (tempAnimal == null) continue;
             if (tempAnimal.getAge() < tempAnimal.getBreedingAge()) continue;
 
             if (tempAnimal.getClass().equals(this.getClass()) && tempAnimal.getGender() == 1) {
@@ -190,14 +199,10 @@ public abstract class Animal extends Species
                     try {
                         Class<?> tempClass = this.getClass();
                         Animal offspring = (Animal) tempClass
-                                .getDeclaredConstructor(boolean.class, Location.class , int.class)
-                                .newInstance(
-                                        false,
-                                        freeSpaces.get(i),
-                                        new Random().nextInt(2)   // random gender 0 or 1
-                                );
+                                .getDeclaredConstructor(boolean.class, Location.class)
+                                .newInstance(false, freeSpaces.get(i));
 
-                        currentField.placeAnimal(offspring, freeSpaces.get(i));
+                        nextFieldState.placeAnimal(offspring, freeSpaces.get(i));
                     } catch (Exception error) {
                         error.printStackTrace();
                         return false;
@@ -224,17 +229,13 @@ public abstract class Animal extends Species
         // See if it was possible to move.
         if(nextLocation != null) {
             setLocation(nextLocation);
-            currentField.placeAnimal(this, nextLocation);
-        }
-        else {
-            // Overcrowding.
-            setDead();
         }
         return true;
     }
 
     public void act(Field currentField, Field nextFieldState)
     {
+        
         incrementAge(this.getMaxAge());
         incrementHunger();
         if(! isAlive()) {
@@ -242,16 +243,18 @@ public abstract class Animal extends Species
         }
 
         // Fix this
-        if (tryFlee(this.getLocation(), currentField)) {
-            return;
-        } else if (tryRest(this.getLocation(), currentField)) {
-            return;
-        } else if (tryHunt(this.getLocation(), currentField)) {
-            return;
-        } else if (tryBreed(this.getLocation(), currentField)) {
-            return;
-        } else {
-            tryWander(this.getLocation(), currentField);
+        if (!tryFlee(this.getLocation(), currentField)) {
+            if (!tryRest(this.getLocation(), currentField)) {
+                if (!tryHunt(this.getLocation(), currentField)) {
+                    if (!tryBreed(this.getLocation(), currentField, nextFieldState)) {
+                        tryWander(this.getLocation(), currentField);
+                    }
+                }
+            }
+        }
+
+        if (isAlive()) {
+            nextFieldState.placeAnimal(this, getLocation());
         }
     }
 

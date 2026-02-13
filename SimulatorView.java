@@ -41,10 +41,16 @@ public class SimulatorView extends JFrame
     {
         stats = new FieldStats();
         colors = new LinkedHashMap<>();
-        setColor(Rabbit.class, Color.orange);
-        setColor(Fox.class, Color.blue);
 
-        setTitle("Fox and Rabbit Simulation");
+        setColor(Falcon.class, Color.red);
+        setColor(Snake.class, Color.green);
+        setColor(Jerboa.class, Color.orange);
+        setColor(Lizard.class, Color.blue);
+        setColor(Camel.class, Color.magenta);
+    setColor(Bush.class, new Color(34, 139, 34));
+    setColor(Nakhla.class, new Color(85, 107, 47));
+
+        setTitle("Desert Ecosystem Simulation");
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
         population = new JLabel(POPULATION_PREFIX, JLabel.CENTER);
         
@@ -103,10 +109,10 @@ public class SimulatorView extends JFrame
 
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Object animal = field.getAnimalAt(new Location(row, col));
-                if(animal != null) {
-                    stats.incrementCount(animal.getClass());
-                    fieldView.drawMark(col, row, getColor(animal.getClass()));
+                Species occupant = field.getSpeciesAt(new Location(row, col));
+                if(occupant != null) {
+                    stats.incrementCount(occupant.getClass());
+                    fieldView.drawMark(col, row, getColor(occupant.getClass()));
                 }
                 else {
                     fieldView.drawMark(col, row, EMPTY_COLOR);

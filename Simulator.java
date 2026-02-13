@@ -14,10 +14,15 @@ public class Simulator
     private static final int DEFAULT_WIDTH = 120;
     // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 80;
-    // The probability that a fox will be created in any given grid position.
-    private static final double FOX_CREATION_PROBABILITY = 0.02;
-    // The probability that a rabbit will be created in any given position.
-    private static final double RABBIT_CREATION_PROBABILITY = 0.08;    
+
+    private static final double FALCON_CREATION_PROBABILITY = SimulationConfig.FALCON_SPAWN;
+    private static final double SNAKE_CREATION_PROBABILITY = SimulationConfig.SNAKE_SPAWN;
+    private static final double CAMEL_CREATION_PROBABILITY = SimulationConfig.CAMEL_SPAWN;
+    private static final double LIZARD_CREATION_PROBABILITY = SimulationConfig.LIZARD_SPAWN;
+    private static final double JERBOA_CREATION_PROBABILITY = SimulationConfig.JERBOA_SPAWN;
+    private static final double BUSH_CREATION_PROBABILITY = SimulationConfig.BUSH_SPAWN;
+    private static final double NAKHLA_CREATION_PROBABILITY = SimulationConfig.NAKHLA_SPAWN;
+
 
     // The current state of the field.
     private Field field;
@@ -25,6 +30,11 @@ public class Simulator
     private int step;
     // A graphical view of the simulation.
     private final SimulatorView view;
+
+    public static void main(String[] args) {
+        Simulator s = new Simulator();
+        s.runLongSimulation();
+    }
 
     /**
      * Construct a simulation field with default size.
@@ -88,9 +98,15 @@ public class Simulator
         // the next step.
         Field nextFieldState = new Field(field.getDepth(), field.getWidth());
 
-        List<Animal> animals = field.getAnimals();
+        List<Animal> animals = new ArrayList<>(field.getAnimals());
         for (Animal anAnimal : animals) {
             anAnimal.act(field, nextFieldState);
+        }
+
+        for (Species species : field.getSpecies()) {
+            if (species instanceof Plant plant && plant.isAlive()) {
+                nextFieldState.placePlant(plant, plant.getLocation());
+            }
         }
         
         // Replace the old state with the new one.
@@ -119,15 +135,35 @@ public class Simulator
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                if(rand.nextDouble() <= FOX_CREATION_PROBABILITY) {
+                if(rand.nextDouble() <= FALCON_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    Fox fox = new Fox(true, location);
-                    field.placeAnimal(fox, location);
+                    Falcon falcon = new Falcon(true, location);
+                    field.placeAnimal(falcon, location);
                 }
-                else if(rand.nextDouble() <= RABBIT_CREATION_PROBABILITY) {
+                else if(rand.nextDouble() <= SNAKE_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    Rabbit rabbit = new Rabbit(true, location);
-                    field.placeAnimal(rabbit, location);
+                    Snake snake = new Snake(true, location);
+                    field.placeAnimal(snake, location);
+                } else if(rand.nextDouble() <= LIZARD_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    Lizard lizard = new Lizard(true, location);
+                    field.placeAnimal(lizard, location);
+                } else if(rand.nextDouble() <= JERBOA_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    Jerboa jerboa = new Jerboa(true, location);
+                    field.placeAnimal(jerboa, location);
+                } else if(rand.nextDouble() <= CAMEL_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    Camel camel = new Camel(true, location);
+                    field.placeAnimal(camel, location);
+                } else if(rand.nextDouble() <= BUSH_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    Bush bush = new Bush(location);
+                    field.placePlant(bush, location);
+                } else if(rand.nextDouble() <= NAKHLA_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    Nakhla nakhla = new Nakhla(location);
+                    field.placePlant(nakhla, location);
                 }
                 // else leave the location empty.
             }
@@ -140,7 +176,7 @@ public class Simulator
     public void reportStats()
     {
         //System.out.print("Step: " + step + " ");
-        field.fieldStats();
+        field.fieldStats(step);
     }
     
     /**

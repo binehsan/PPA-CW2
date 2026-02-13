@@ -6,6 +6,7 @@ public class Species {
 
     public Species(Location location) {
         this.location = location;
+        this.alive = true;
     }
 
     /**
@@ -42,5 +43,14 @@ public class Species {
     protected void setLocation(Location location)
     {
         this.location = location;
+    }
+
+    /**
+     * Return the energy value gained by eating this species.
+     * By default, non-edible species return zero.
+     */
+    public int getEnergyValue()
+    {
+        return 0;
     }
 }
