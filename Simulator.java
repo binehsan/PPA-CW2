@@ -113,7 +113,7 @@ public class Simulator
         field = nextFieldState;
 
         reportStats();
-        view.showStatus(step, field);
+        view.showStatus(getDisplayTime(), field);
     }
         
     /**
@@ -123,7 +123,7 @@ public class Simulator
     {
         step = 0;
         populate();
-        view.showStatus(step, field);
+        view.showStatus(getDisplayTime(), field);
     }
     
     /**
@@ -191,5 +191,10 @@ public class Simulator
         catch(InterruptedException e) {
             // ignore
         }
+    }
+
+
+    public String getDisplayTime(){
+        return String.format("%02d:%02d", step / 60, step % 60);
     }
 }

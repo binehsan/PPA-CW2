@@ -123,6 +123,7 @@ public abstract class Animal extends Species
                     // See if it was possible to move.
                     if(nextLocation != null) {
                         setLocation(nextLocation);
+                        currentField.placeAnimal(this, nextLocation);
                     }
                     else {
                         // Overcrowding.
@@ -161,6 +162,7 @@ public abstract class Animal extends Species
                          animal.setDead();
                      }
                      this.setLocation(target.getLocation());
+                     currentField.placeAnimal(this, target.getLocation());
 
                     return true;
                 }
@@ -229,6 +231,10 @@ public abstract class Animal extends Species
         // See if it was possible to move.
         if(nextLocation != null) {
             setLocation(nextLocation);
+            currentField.placeAnimal(this, nextLocation);
+        } else {
+            // Overcrowding.
+            setDead();
         }
         return true;
     }
