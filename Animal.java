@@ -145,29 +145,11 @@ public abstract class Animal extends Species
         return false;
     }
 
-<<<<<<< HEAD
     public boolean tryHunt(Location location, Field currentField, Field nextFieldState){
         List<Location> visibleSpaces = currentField.getAdjacentLocations(location, this.getVisibility());
         Location closestPreyLocation = null;
         Species closestPrey = null;
         int closestDistance = Integer.MAX_VALUE;
-=======
-    public boolean tryHunt(Location location, Field currentField){
-        List<Location> adjacentSpaces = currentField.getAdjacentLocations(location, this.getVisibility());
-        for (Location adjacent : adjacentSpaces) {
-            Species target = currentField.getSpeciesAt(adjacent);
-            for (Class<?> prey : this.getPrey()) {
-                if (prey.isInstance(target)) {
-                    // take energy level, move to its location.
-                     this.setEnergyLevel(this.getEnergyLevel() + target.getEnergyValue());
-                     if (target instanceof Plant plant) {
-                         plant.harvest();
-                     } else if (target instanceof Animal animal) {
-                         animal.setDead();
-                     }
-                     this.setLocation(target.getLocation());
-                     currentField.placeAnimal(this, target.getLocation());
->>>>>>> 9a4d4ef491f5ff9bf5f63b3310474513012f6635
 
         for (Location visible : visibleSpaces) {
             Animal animalTarget = currentField.getAnimalAt(visible);
