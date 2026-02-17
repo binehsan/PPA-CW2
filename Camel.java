@@ -68,6 +68,10 @@ public class Camel extends Animal
         return CONFIG.maxOffspring();
     }
 
+    public int getMaxEnergyLevel() {
+        return CONFIG.maxEnergy();
+    }
+
     public double getBreedingProbability() {
         return CONFIG.breedingProbability();
     }

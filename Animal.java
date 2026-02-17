@@ -93,8 +93,8 @@ public abstract class Animal extends Species
     abstract public int getBreedingAge();
     abstract public int getBreedThreshold();
     abstract public int getMaxAge();
-
     abstract public int getMaxOffspring();
+    abstract public int getMaxEnergyLevel();
 
     abstract public double getBreedingProbability();
 
@@ -107,14 +107,14 @@ public abstract class Animal extends Species
      * @param currentField
      * @return
      */
-    public boolean tryFlee(Location location, Field currentField){
-        List<Location> adjacentSpaces = currentField.getAdjacentLocations(location, this.getVisibility());
+    public boolean tryFlee(Location location, Field currentField, Field nextFieldState){
+        List<Location> adjacentSpaces = currentField.getAdjacentLocations(location, 1);
         for (Location adjacent : adjacentSpaces) {
             Animal tempAnimal = currentField.getAnimalAt(adjacent);
             for (Class<?> predator : this.getPredators()) {
                 if (predator.isInstance(tempAnimal)) {
                     List<Location> freeLocations =
-                            currentField.getFreeAdjacentLocations(getLocation(), 1);
+                            nextFieldState.getFreeAdjacentLocations(getLocation(), 1);
                     Location nextLocation = null;
                     if(! freeLocations.isEmpty()) {
                         // No food found - try to move to a free location.
@@ -124,10 +124,7 @@ public abstract class Animal extends Species
                     if(nextLocation != null) {
                         setLocation(nextLocation);
                     }
-                    else {
-                        // Overcrowding.
-                        setDead();
-                    }
+                    // If no space to flee, stay put and risk predation later.
                     return true;
                 }
             }
@@ -141,30 +138,81 @@ public abstract class Animal extends Species
 
         if (this.getEnergyLevel() < this.getRestThreshold()){
             // set as an enum
-            this.setEnergyLevel(this.getEnergyLevel() + 1);
+            this.setEnergyLevel(Math.min(this.getEnergyLevel() + 1, this.getMaxEnergyLevel()));
             return true;
         }
         return false;
     }
 
-    public boolean tryHunt(Location location, Field currentField){
-        List<Location> adjacentSpaces = currentField.getAdjacentLocations(location, this.getVisibility());
-        for (Location adjacent : adjacentSpaces) {
-            Species target = currentField.getSpeciesAt(adjacent);
-            for (Class<?> prey : this.getPrey()) {
-                if (prey.isInstance(target)) {
-                    // take energy level, move to its location.
-                     this.setEnergyLevel(this.getEnergyLevel() + target.getEnergyValue());
-                     if (target instanceof Plant plant) {
-                         plant.harvest();
-                     } else if (target instanceof Animal animal) {
-                         animal.setDead();
-                     }
-                     this.setLocation(target.getLocation());
+    public boolean tryHunt(Location location, Field currentField, Field nextFieldState){
+        List<Location> visibleSpaces = currentField.getAdjacentLocations(location, this.getVisibility());
+        Location closestPreyLocation = null;
+        Species closestPrey = null;
+        int closestDistance = Integer.MAX_VALUE;
 
-                    return true;
+        for (Location visible : visibleSpaces) {
+            Animal animalTarget = currentField.getAnimalAt(visible);
+            if (animalTarget != null && animalTarget.isAlive()) {
+                for (Class<?> prey : this.getPrey()) {
+                    if (prey.isInstance(animalTarget)) {
+                        int distance = Math.abs(visible.row() - location.row())
+                                + Math.abs(visible.col() - location.col());
+                        if (distance < closestDistance) {
+                            closestDistance = distance;
+                            closestPreyLocation = visible;
+                            closestPrey = animalTarget;
+                        }
+                    }
                 }
             }
+
+            Plant plantTarget = currentField.getPlantAt(visible);
+            if (plantTarget != null && plantTarget.isAlive()) {
+                for (Class<?> prey : this.getPrey()) {
+                    if (prey.isInstance(plantTarget)) {
+                        int distance = Math.abs(visible.row() - location.row())
+                                + Math.abs(visible.col() - location.col());
+                        if (distance < closestDistance) {
+                            closestDistance = distance;
+                            closestPreyLocation = visible;
+                            closestPrey = plantTarget;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (closestPreyLocation == null || closestPrey == null) {
+            return false;
+        }
+
+        if (closestDistance == 1) {
+            this.setEnergyLevel(Math.min(this.getEnergyLevel() + closestPrey.getEnergyValue(), this.getMaxEnergyLevel()));
+            if (closestPrey instanceof Plant plant) {
+                if (nextFieldState.getPlantAt(closestPreyLocation) == null) {
+                    plant.harvest();
+                    if (plant.isAlive()) {
+                        nextFieldState.placePlant(plant, closestPreyLocation);
+                    }
+                }
+                if (!plant.blocksMovement()) {
+                    this.setLocation(closestPreyLocation);
+                }
+            } else if (closestPrey instanceof Animal animal) {
+                animal.setDead();
+                this.setLocation(closestPreyLocation);
+            }
+            return true;
+        }
+
+        int rowStep = Integer.compare(closestPreyLocation.row(), location.row());
+        int colStep = Integer.compare(closestPreyLocation.col(), location.col());
+        Location stepLocation = new Location(location.row() + rowStep, location.col() + colStep);
+        Plant stepPlant = nextFieldState.getPlantAt(stepLocation);
+        boolean stepBlocked = stepPlant != null && stepPlant.isAlive() && stepPlant.blocksMovement();
+        if (nextFieldState.getAnimalAt(stepLocation) == null && !stepBlocked) {
+            this.setLocation(stepLocation);
+            return true;
         }
 
         return false;
@@ -173,11 +221,13 @@ public abstract class Animal extends Species
 
     public boolean tryBreed(Location location, Field currentField, Field nextFieldState){
 
-        if (this.getAge() < this.getBreedingAge()) return false;
+    if (this.getAge() < this.getBreedingAge()) return false;
 
         if (this.getGender() == 1) return false;    // skip if female
 
-        if (energyLevel < this.getBreedThreshold()) return false;
+    if (energyLevel < this.getBreedThreshold()) return false;
+
+    if (!hasPreyInRange(location, currentField)) return false;
 
         List<Location> adjacentSpaces = currentField.getAdjacentLocations(location, this.getVisibility());
         for (Location adjacent : adjacentSpaces) {
@@ -187,7 +237,7 @@ public abstract class Animal extends Species
             if (tempAnimal.getAge() < tempAnimal.getBreedingAge()) continue;
 
             if (tempAnimal.getClass().equals(this.getClass()) && tempAnimal.getGender() == 1) {
-                List<Location> freeSpaces = currentField.getFreeAdjacentLocations(location, this.getVisibility());
+                List<Location> freeSpaces = nextFieldState.getFreeAdjacentLocations(location, this.getVisibility());
 
                 //number of offsprings
                 for (int i=0; i < Math.min(freeSpaces.size(), this.getMaxOffspring()); i++) {
@@ -217,10 +267,34 @@ public abstract class Animal extends Species
         return false;
     }
 
+    private boolean hasPreyInRange(Location location, Field currentField) {
+        List<Location> adjacentSpaces = currentField.getAdjacentLocations(location, this.getVisibility());
+        for (Location adjacent : adjacentSpaces) {
+            Animal animalTarget = currentField.getAnimalAt(adjacent);
+            if (animalTarget != null && animalTarget.isAlive()) {
+                for (Class<?> prey : this.getPrey()) {
+                    if (prey.isInstance(animalTarget)) {
+                        return true;
+                    }
+                }
+            }
 
-    public boolean tryWander(Location location, Field currentField){
+            Plant plantTarget = currentField.getPlantAt(adjacent);
+            if (plantTarget != null && plantTarget.isAlive()) {
+                for (Class<?> prey : this.getPrey()) {
+                    if (prey.isInstance(plantTarget)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
+    public boolean tryWander(Location location, Field currentField, Field nextFieldState){
         List<Location> freeLocations =
-                currentField.getFreeAdjacentLocations(getLocation(), 1);
+                nextFieldState.getFreeAdjacentLocations(getLocation(), 1);
         Location nextLocation = null;
         if(! freeLocations.isEmpty()) {
             // No food found - try to move to a free location.
@@ -242,14 +316,19 @@ public abstract class Animal extends Species
             return;
         }
 
-        // Fix this
-        if (!tryFlee(this.getLocation(), currentField)) {
-            if (!tryRest(this.getLocation(), currentField)) {
-                if (!tryHunt(this.getLocation(), currentField)) {
-                    if (!tryBreed(this.getLocation(), currentField, nextFieldState)) {
-                        tryWander(this.getLocation(), currentField);
-                    }
-                }
+    boolean acted = tryFlee(this.getLocation(), currentField, nextFieldState);
+
+        if (!acted) {
+            acted = tryHunt(this.getLocation(), currentField, nextFieldState);
+        }
+
+        if (!acted && this.getEnergyLevel() < this.getRestThreshold()) {
+            acted = tryRest(this.getLocation(), currentField);
+        }
+
+        if (!acted) {
+            if (!tryBreed(this.getLocation(), currentField, nextFieldState)) {
+                tryWander(this.getLocation(), currentField, nextFieldState);
             }
         }
 

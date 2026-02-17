@@ -13,8 +13,10 @@ public class Field {
 
     // The dimensions of the field.
     private final int depth, width;
-    // Species mapped by location.
-    private final Map<Location, Species> field = new HashMap<>();
+    // Animals mapped by location.
+    private final Map<Location, Animal> animalsByLocation = new HashMap<>();
+    // Plants mapped by location.
+    private final Map<Location, Plant> plantsByLocation = new HashMap<>();
     // The animals.
     private final List<Animal> animals = new ArrayList<>();
 
@@ -39,11 +41,11 @@ public class Field {
      */
     public void placeAnimal(Animal anAnimal, Location location) {
         assert location != null;
-        Species other = field.get(location);
-        if (other instanceof Animal otherAnimal) {
+        Animal otherAnimal = animalsByLocation.get(location);
+        if (otherAnimal != null) {
             animals.remove(otherAnimal);
         }
-        field.put(location, anAnimal);
+        animalsByLocation.put(location, anAnimal);
         animals.add(anAnimal);
     }
 
@@ -54,11 +56,7 @@ public class Field {
      */
     public void placePlant(Plant plant, Location location) {
         assert location != null;
-        Species other = field.get(location);
-        if (other instanceof Animal otherAnimal) {
-            animals.remove(otherAnimal);
-        }
-        field.put(location, plant);
+        plantsByLocation.put(location, plant);
     }
 
     /**
@@ -68,11 +66,17 @@ public class Field {
      * @return The animal at the given location, or null if there is none.
      */
     public Animal getAnimalAt(Location location) {
-        Species occupant = field.get(location);
-        if (occupant instanceof Animal animal) {
-            return animal;
-        }
-        return null;
+        return animalsByLocation.get(location);
+    }
+
+    /**
+     * Return the plant at the given location, if any.
+     *
+     * @param location Where in the field.
+     * @return The plant at the location, or null if there is none.
+     */
+    public Plant getPlantAt(Location location) {
+        return plantsByLocation.get(location);
     }
 
     /**
@@ -81,7 +85,11 @@ public class Field {
      * @return The species at the location, or null if there is none.
      */
     public Species getSpeciesAt(Location location) {
-        return field.get(location);
+        Animal animal = animalsByLocation.get(location);
+        if (animal != null) {
+            return animal;
+        }
+        return plantsByLocation.get(location);
     }
 
     /**
@@ -94,10 +102,14 @@ public class Field {
         List<Location> free = new LinkedList<>();
         List<Location> adjacent = getAdjacentLocations(location, visibility);
         for (Location next : adjacent) {
-            Species occupant = field.get(next);
-            if (occupant == null) {
+            Animal animal = animalsByLocation.get(next);
+            Plant plant = plantsByLocation.get(next);
+            boolean plantBlocks = plant != null && plant.isAlive() && plant.blocksMovement();
+            if (animal == null && !plantBlocks) {
                 free.add(next);
-            } else if (!occupant.isAlive()) {
+            } else if (animal != null && !animal.isAlive()) {
+                free.add(next);
+            } else if (plant != null && !plant.isAlive() && animal == null) {
                 free.add(next);
             }
         }
@@ -150,32 +162,35 @@ public class Field {
                 numCamels = 0;
         int numBushes = 0,
                 numNakhlas = 0;
-        for (Species occupant : field.values()) {
-            if (occupant instanceof Falcon falcon) {
+        for (Animal animal : animalsByLocation.values()) {
+            if (animal instanceof Falcon falcon) {
                 if (falcon.isAlive()) {
                     numFalcons++;
                 }
-            } else if (occupant instanceof Snake snake) {
+            } else if (animal instanceof Snake snake) {
                 if (snake.isAlive()) {
                     numSnakes++;
                 }
-            } else if (occupant instanceof Lizard lizard) {
+            } else if (animal instanceof Lizard lizard) {
                 if (lizard.isAlive()) {
                     numLizards++;
                 }
-            } else if (occupant instanceof Jerboa jerboa) {
+            } else if (animal instanceof Jerboa jerboa) {
                 if (jerboa.isAlive()) {
                     numJerboas++;
                 }
-            } else if (occupant instanceof Camel camel) {
+            } else if (animal instanceof Camel camel) {
                 if (camel.isAlive()) {
                     numCamels++;
                 }
-            } else if (occupant instanceof Bush bush) {
+            }
+        }
+        for (Plant plant : plantsByLocation.values()) {
+            if (plant instanceof Bush bush) {
                 if (bush.isAlive()) {
                     numBushes++;
                 }
-            } else if (occupant instanceof Nakhla nakhla) {
+            } else if (plant instanceof Nakhla nakhla) {
                 if (nakhla.isAlive()) {
                     numNakhlas++;
                 }
@@ -198,7 +213,8 @@ public class Field {
      * Empty the field.
      */
     public void clear() {
-        field.clear();
+        animalsByLocation.clear();
+        plantsByLocation.clear();
         animals.clear();
     }
 
@@ -227,7 +243,16 @@ public class Field {
      * Get all species (animals + plants) in the field.
      */
     public Collection<Species> getSpecies() {
-        return field.values();
+        List<Species> species = new ArrayList<>(animalsByLocation.values());
+        species.addAll(plantsByLocation.values());
+        return species;
+    }
+
+    /**
+     * Get all plants.
+     */
+    public Collection<Plant> getPlants() {
+        return plantsByLocation.values();
     }
 
     /**

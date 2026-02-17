@@ -103,9 +103,27 @@ public class Simulator
             anAnimal.act(field, nextFieldState);
         }
 
-        for (Species species : field.getSpecies()) {
-            if (species instanceof Plant plant && plant.isAlive()) {
-                nextFieldState.placePlant(plant, plant.getLocation());
+        for (Plant plant : field.getPlants()) {
+            if (plant.isAlive()) {
+                Location location = plant.getLocation();
+                if (!plant.blocksMovement() || nextFieldState.getAnimalAt(location) == null) {
+                    nextFieldState.placePlant(plant, location);
+                }
+            }
+        }
+
+        Random rand = Randomizer.getRandom();
+        for (int row = 0; row < field.getDepth(); row++) {
+            for (int col = 0; col < field.getWidth(); col++) {
+                Location location = new Location(row, col);
+                if (nextFieldState.getPlantAt(location) == null) {
+                    if (rand.nextDouble() <= SimulationConfig.BUSH_REGROW_CHANCE) {
+                        nextFieldState.placePlant(new Bush(location), location);
+                    } else if (nextFieldState.getAnimalAt(location) == null
+                            && rand.nextDouble() <= SimulationConfig.NAKHLA_REGROW_CHANCE) {
+                        nextFieldState.placePlant(new Nakhla(location), location);
+                    }
+                }
             }
         }
         

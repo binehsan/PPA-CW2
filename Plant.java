@@ -21,4 +21,12 @@ public abstract class Plant extends Species {
     {
         return energyValue;
     }
+
+    /**
+     * Whether this plant blocks movement for animals.
+     */
+    public boolean blocksMovement()
+    {
+        return true;
+    }
 }
