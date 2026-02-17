@@ -21,9 +21,9 @@ public class SimulatorView extends JFrame
     // Color used for objects that have no defined color.
     private static final Color UNKNOWN_COLOR = Color.gray;
 
-    private final String STEP_PREFIX = "Step: ";
+    private final String TIME_PREFIX = "Time: ";
     private final String POPULATION_PREFIX = "Population: ";
-    private final JLabel stepLabel;
+    private final JLabel timeLabel;
     private final JLabel population;
     private final FieldView fieldView;
     
@@ -51,7 +51,7 @@ public class SimulatorView extends JFrame
     setColor(Nakhla.class, new Color(85, 107, 47));
 
         setTitle("Desert Ecosystem Simulation");
-        stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
+        timeLabel = new JLabel(TIME_PREFIX, JLabel.CENTER);
         population = new JLabel(POPULATION_PREFIX, JLabel.CENTER);
         
         setLocation(100, 50);
@@ -59,7 +59,7 @@ public class SimulatorView extends JFrame
         fieldView = new FieldView(height, width);
 
         Container contents = getContentPane();
-        contents.add(stepLabel, BorderLayout.NORTH);
+        contents.add(timeLabel, BorderLayout.NORTH);
         contents.add(fieldView, BorderLayout.CENTER);
         contents.add(population, BorderLayout.SOUTH);
         pack();
@@ -96,13 +96,13 @@ public class SimulatorView extends JFrame
      * @param step Which iteration step it is.
      * @param field The field whose status is to be displayed.
      */
-    public void showStatus(int step, Field field)
+    public void showStatus(String time, Field field)
     {
         if(!isVisible()) {
             setVisible(true);
         }
             
-        stepLabel.setText(STEP_PREFIX + step);
+        timeLabel.setText(TIME_PREFIX + time);
         stats.reset();
         
         fieldView.preparePaint();
