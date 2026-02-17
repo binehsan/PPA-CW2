@@ -28,7 +28,7 @@ public final class SimulationConfig {
     );
 
     public static final SpeciesConfig JERBOA = new SpeciesConfig(
-            6, 90, 0.25, 4,
+            6, 90, 0.15, 4,
             2, 22, 3, 7
     );
 

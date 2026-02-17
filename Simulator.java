@@ -15,6 +15,8 @@ public class Simulator
     // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 80;
 
+    private static final int MINUTES_PER_STEP = 4;
+
     private static final double FALCON_CREATION_PROBABILITY = SimulationConfig.FALCON_SPAWN;
     private static final double SNAKE_CREATION_PROBABILITY = SimulationConfig.SNAKE_SPAWN;
     private static final double CAMEL_CREATION_PROBABILITY = SimulationConfig.CAMEL_SPAWN;
@@ -70,7 +72,7 @@ public class Simulator
      */
     public void runLongSimulation()
     {
-        simulate(700);
+        simulate(1440);
     }
     
     /**
@@ -94,13 +96,14 @@ public class Simulator
     public void simulateOneStep()
     {
         step++;
+        TimePeriod currentTime = getTimePeriod();
         // Use a separate Field to store the starting state of
         // the next step.
         Field nextFieldState = new Field(field.getDepth(), field.getWidth());
 
         List<Animal> animals = new ArrayList<>(field.getAnimals());
         for (Animal anAnimal : animals) {
-            anAnimal.act(field, nextFieldState);
+            anAnimal.act(field, nextFieldState, currentTime);
         }
 
         for (Plant plant : field.getPlants()) {
@@ -211,8 +214,24 @@ public class Simulator
         }
     }
 
+    public TimePeriod getTimePeriod() {
+        int hour = (step*MINUTES_PER_STEP / 60) % 24;
+        if (hour >= 6 && hour < 12) {
+            return TimePeriod.MORNING;
+        } else if (hour >= 12 && hour < 18) {
+            return TimePeriod.AFTERNOON;
+        } else if (hour >= 18 && hour < 24) {
+            return TimePeriod.EVENING;
+        } else {
+            return TimePeriod.NIGHT;
+        }
+    }
 
     public String getDisplayTime(){
-        return String.format("%02d:%02d", step / 60, step % 60);
+        return String.format("%02d:%02d", (step*MINUTES_PER_STEP / 60) % 24, step*MINUTES_PER_STEP % 60) + " (" + getTimePeriod() + ")";
     }
+
+
+
+
 }

@@ -1,4 +1,5 @@
 import java.util.*;
+
 /**
  * Common elements of foxes and rabbits.
  *
@@ -221,14 +222,13 @@ public abstract class Animal extends Species
 
 
     public boolean tryBreed(Location location, Field currentField, Field nextFieldState){
-
-    if (this.getAge() < this.getBreedingAge()) return false;
+        if (this.getAge() < this.getBreedingAge()) return false;
 
         if (this.getGender() == 1) return false;    // skip if female
 
-    if (energyLevel < this.getBreedThreshold()) return false;
+        if (energyLevel < this.getBreedThreshold()) return false;
 
-    if (!hasPreyInRange(location, currentField)) return false;
+//        if (!hasPreyInRange(location, currentField)) return false;
 
         List<Location> adjacentSpaces = currentField.getAdjacentLocations(location, this.getVisibility());
         for (Location adjacent : adjacentSpaces) {
@@ -240,12 +240,12 @@ public abstract class Animal extends Species
             if (tempAnimal.getClass().equals(this.getClass()) && tempAnimal.getGender() == 1) {
                 List<Location> freeSpaces = nextFieldState.getFreeAdjacentLocations(location, this.getVisibility());
 
-                //number of offsprings
-                for (int i=0; i < Math.min(freeSpaces.size(), this.getMaxOffspring()); i++) {
-                    //breed at freeSpaces.get(i)
+                // number of offsprings
+                for (int i = 0; i < Math.min(freeSpaces.size(), this.getMaxOffspring()); i++) {
+                    // breed at freeSpaces.get(i)
                     if (this.getRand().nextDouble() > this.getBreedingProbability()) continue;
 
-                    //Change to use BiFunction functional interface
+                    // Change to use BiFunction functional interface
 
                     try {
                         Class<?> tempClass = this.getClass();
@@ -299,7 +299,7 @@ public abstract class Animal extends Species
         Location nextLocation = null;
         if(! freeLocations.isEmpty()) {
             // No food found - try to move to a free location.
-            nextLocation = freeLocations.removeFirst(); //FLAG
+            nextLocation = freeLocations.removeFirst(); // FLAG
         }
         // See if it was possible to move.
         if(nextLocation != null) {
@@ -312,23 +312,46 @@ public abstract class Animal extends Species
         return true;
     }
 
-    public void act(Field currentField, Field nextFieldState)
+    public void act(Field currentField, Field nextFieldState, TimePeriod currentTime)
     {
-        
+
         incrementAge(this.getMaxAge());
         incrementHunger();
+
         if(! isAlive()) {
             return;
         }
 
-    boolean acted = tryFlee(this.getLocation(), currentField, nextFieldState);
 
-        if (!acted) {
-            acted = tryHunt(this.getLocation(), currentField, nextFieldState);
-        }
+        boolean acted = tryFlee(this.getLocation(), currentField, nextFieldState);
 
         if (!acted && this.getEnergyLevel() < this.getRestThreshold()) {
-            acted = tryRest(this.getLocation(), currentField);
+            double prob = getRand().nextDouble();
+            if (currentTime == TimePeriod.NIGHT) {
+                if (prob < 0.7) {
+                    acted = tryRest(this.getLocation(), currentField);
+                    if (!acted) {
+                        acted = tryHunt(this.getLocation(), currentField, nextFieldState);
+                    }
+                } else {
+                    acted = tryHunt(this.getLocation(), currentField, nextFieldState);
+                    if (!acted) {
+                        acted = tryRest(this.getLocation(), currentField);
+                    }
+                }
+            } else {
+                if (prob < 0.7) {
+                    acted = tryHunt(this.getLocation(), currentField, nextFieldState);
+                    if (!acted) {
+                        acted = tryRest(this.getLocation(), currentField);
+                    }
+                } else {
+                    acted = tryRest(this.getLocation(), currentField);
+                    if (!acted) {
+                        acted = tryHunt(this.getLocation(), currentField, nextFieldState);
+                    }
+                }
+            }
         }
 
         if (!acted) {
@@ -341,8 +364,5 @@ public abstract class Animal extends Species
             nextFieldState.placeAnimal(this, getLocation());
         }
     }
-
-
 }
-
 
