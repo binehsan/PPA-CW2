@@ -120,8 +120,7 @@ public abstract class Animal extends Species
                     if(! freeLocations.isEmpty()) {
                         // No food found - try to move to a free location.
                         nextLocation = freeLocations.removeFirst();
-                    }
-                    // See if it was possible to move.
+                    }                 // See if it was possible to move.
                     if(nextLocation != null) {
                         setLocation(nextLocation);
                         currentField.placeAnimal(this, nextLocation);
@@ -327,7 +326,7 @@ public abstract class Animal extends Species
 
         if (!acted && this.getEnergyLevel() < this.getRestThreshold()) {
             double prob = getRand().nextDouble();
-            if (currentTime == TimePeriod.NIGHT) {
+            if (currentTime == TimePeriod.NIGHT || currentTime == TimePeriod.EVENING) {
                 if (prob < 0.7) {
                     acted = tryRest(this.getLocation(), currentField);
                     if (!acted) {

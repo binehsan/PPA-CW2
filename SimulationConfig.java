@@ -41,6 +41,6 @@ public final class SimulationConfig {
         public static final int PLANT_ENERGY = 8;
         public static final int BUSH_HARVESTS = 7;
         public static final int NAKHLA_HARVESTS = 9;
-                public static final double BUSH_REGROW_CHANCE = 0.0008;
-                public static final double NAKHLA_REGROW_CHANCE = 0.0006;
+        public static final double BUSH_REGROW_CHANCE = 0.0008;
+        public static final double NAKHLA_REGROW_CHANCE = 0.0006;
 }
