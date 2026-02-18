@@ -4,43 +4,50 @@ public final class SimulationConfig {
 
     // Spawn probabilities
                 public static final double FALCON_SPAWN = 0.02;
-                public static final double SNAKE_SPAWN = 0.025;
+                public static final double SNAKE_SPAWN = 0.03;
                 public static final double CAMEL_SPAWN = 0.04;
-                public static final double LIZARD_SPAWN = 0.12;
-                public static final double JERBOA_SPAWN = 0.12;
-                public static final double BUSH_SPAWN = 0.22;
-                public static final double NAKHLA_SPAWN = 0.14;
+                public static final double LIZARD_SPAWN = 0.14;
+                public static final double JERBOA_SPAWN = 0.14;
+                public static final double BUSH_SPAWN = 0.25;
+                public static final double NAKHLA_SPAWN = 0.15;
 
     // Species configs by role
+    // SpeciesConfig(breedingAge, maxAge, breedingProbability, maxOffspring,
+    //               visibility, maxEnergy, restThreshold, breedingThreshold)
+    // IMPORTANT: restThreshold < breedingThreshold < maxEnergy
+    //   LOW energy  = [0, restThreshold)       -> desperate hunt / rest
+    //   MED energy  = [restThreshold, breedTh) -> hunt to build reserves
+    //   HIGH energy = [breedTh, maxEnergy]     -> breed, then hunt
+
     public static final SpeciesConfig FALCON = new SpeciesConfig(
-            24, 200, 0.04, 2,
-            3, 26, 6, 12
+            10, 200, 0.20, 2,
+            3, 26, 6, 14
     );
 
     public static final SpeciesConfig SNAKE = new SpeciesConfig(
-            16, 170, 0.06, 3,
-            3, 24, 6, 10
+            8, 170, 0.14, 3,
+            3, 24, 5, 12
     );
 
     public static final SpeciesConfig LIZARD = new SpeciesConfig(
-            8, 110, 0.22, 3,
-            2, 22, 4, 7
+            4, 110, 0.35, 4,
+            2, 22, 4, 10
     );
 
     public static final SpeciesConfig JERBOA = new SpeciesConfig(
-            6, 90, 0.15, 4,
-            2, 22, 3, 7
+            4, 90, 0.27, 5,
+            2, 22, 4, 10
     );
 
     public static final SpeciesConfig CAMEL = new SpeciesConfig(
-            14, 240, 0.1, 2,
-            3, 36, 7, 13
+            8, 240, 0.20, 3,
+            3, 36, 7, 16
     );
 
     // Plants
-        public static final int PLANT_ENERGY = 8;
-        public static final int BUSH_HARVESTS = 7;
-        public static final int NAKHLA_HARVESTS = 9;
-        public static final double BUSH_REGROW_CHANCE = 0.0008;
-        public static final double NAKHLA_REGROW_CHANCE = 0.0006;
+        public static final int PLANT_ENERGY = 6;
+        public static final int BUSH_HARVESTS = 8;
+        public static final int NAKHLA_HARVESTS = 10;
+        public static final double BUSH_REGROW_CHANCE = 0.002;
+        public static final double NAKHLA_REGROW_CHANCE = 0.001;
 }

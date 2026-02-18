@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -13,6 +14,8 @@ public class Camel extends Animal
     private static final Class<?>[] preys = {Bush.class, Nakhla.class};
 
     private static final Class<?>[] predators = {};
+
+    private static final TimePeriod[] restingPeriods = {TimePeriod.NIGHT};
 
     // Characteristics shared by all foxes (class variables).
     private static final SpeciesConfig CONFIG = SimulationConfig.CAMEL;
@@ -78,6 +81,10 @@ public class Camel extends Animal
 
     public Class<?>[] getPrey(){
         return preys;
+    }
+
+    public TimePeriod[] getRestingPeriods(){
+        return restingPeriods;
     }
 
     public Random getRand() {

@@ -14,6 +14,8 @@ public class Lizard extends Animal
 
     private static final Class<?>[] predators = {Falcon.class, Snake.class};
 
+    private static final TimePeriod[] restingPeriods = {TimePeriod.MORNING, TimePeriod.NIGHT};
+
     // Characteristics shared by all foxes (class variables).
     private static final SpeciesConfig CONFIG = SimulationConfig.LIZARD;
 
@@ -50,6 +52,10 @@ public class Lizard extends Animal
 
     public Class<?>[] getPredators(){
         return predators;
+    }
+
+    public TimePeriod[] getRestingPeriods(){
+        return restingPeriods;
     }
 
     public int getRestThreshold(){

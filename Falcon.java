@@ -10,9 +10,11 @@ import java.util.Random;
 public class Falcon extends Animal
 {
     //COME UP WITH SOLUTION
-    private static final Class<?>[] preys = {Snake.class, Lizard.class};
+    private static final Class<?>[] preys = {Snake.class, Jerboa.class, Lizard.class};
 
     private static final Class<?>[] predators = {};
+    
+    private static final TimePeriod[] restingPeriods = {TimePeriod.NIGHT, TimePeriod.EVENING};
 
     private static final SpeciesConfig CONFIG = SimulationConfig.FALCON;
 
@@ -49,6 +51,10 @@ public class Falcon extends Animal
 
     public Class<?>[] getPredators(){
         return predators;
+    }
+
+    public TimePeriod[] getRestingPeriods(){
+        return restingPeriods;
     }
 
     public int getRestThreshold(){

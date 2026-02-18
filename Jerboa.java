@@ -12,7 +12,9 @@ public class Jerboa extends Animal
     //COME UP WITH SOLUTION
     private static final Class<?>[] preys = {Bush.class};
 
-    private static final Class<?>[] predators = {Snake.class};
+    private static final Class<?>[] predators = {Falcon.class, Snake.class};
+
+    private static final TimePeriod[] restingPeriods = {TimePeriod.MORNING, TimePeriod.AFTERNOON};
 
     // Characteristics shared by all foxes (class variables).
     private static final SpeciesConfig CONFIG = SimulationConfig.JERBOA;
@@ -50,6 +52,10 @@ public class Jerboa extends Animal
 
     public Class<?>[] getPredators(){
         return predators;
+    }
+
+    public TimePeriod[] getRestingPeriods(){
+        return restingPeriods;
     }
 
     public int getRestThreshold(){
