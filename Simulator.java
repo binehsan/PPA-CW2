@@ -33,6 +33,9 @@ public class Simulator
     // A graphical view of the simulation.
     private final SimulatorView view;
 
+    private Weather currentWeather;
+
+
     public static void main(String[] args) {
         Simulator s = new Simulator();
         s.runLongSimulation();
@@ -72,7 +75,8 @@ public class Simulator
      */
     public void runLongSimulation()
     {
-        simulate(1440);
+
+        simulate(360);
     }
     
     /**
@@ -82,6 +86,7 @@ public class Simulator
      */
     public void simulate(int numSteps)
     {
+        currentWeather = Weather.NORMAL;
         reportStats();
         for(int n = 1; n <= numSteps && field.isViable(); n++) {
             simulateOneStep();
@@ -97,13 +102,18 @@ public class Simulator
     {
         step++;
         TimePeriod currentTime = getTimePeriod();
+
+        double weatherRoll = Randomizer.getRandom().nextDouble();
+        if (weatherRoll < 0.2)
+            updateWeather();
+
         // Use a separate Field to store the starting state of
         // the next step.
         Field nextFieldState = new Field(field.getDepth(), field.getWidth());
 
         List<Animal> animals = new ArrayList<>(field.getAnimals());
         for (Animal anAnimal : animals) {
-            anAnimal.act(field, nextFieldState, currentTime);
+            anAnimal.act(field, nextFieldState, currentTime, currentWeather);
         }
 
         for (Plant plant : field.getPlants()) {
@@ -116,14 +126,19 @@ public class Simulator
         }
 
         Random rand = Randomizer.getRandom();
+        double weatherMultiplier = switch(currentWeather) {
+            case RAIN -> 1.5;
+            case SANDSTORM -> 0.5;
+            default -> 1.0;
+        };
         for (int row = 0; row < field.getDepth(); row++) {
             for (int col = 0; col < field.getWidth(); col++) {
                 Location location = new Location(row, col);
                 if (nextFieldState.getPlantAt(location) == null) {
-                    if (rand.nextDouble() <= SimulationConfig.BUSH_REGROW_CHANCE) {
+                    if (rand.nextDouble() <= SimulationConfig.BUSH_REGROW_CHANCE*weatherMultiplier) {
                         nextFieldState.placePlant(new Bush(location), location);
                     } else if (nextFieldState.getAnimalAt(location) == null
-                            && rand.nextDouble() <= SimulationConfig.NAKHLA_REGROW_CHANCE) {
+                            && rand.nextDouble() <= SimulationConfig.NAKHLA_REGROW_CHANCE*weatherMultiplier) {
                         nextFieldState.placePlant(new Nakhla(location), location);
                     }
                 }
@@ -156,33 +171,48 @@ public class Simulator
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                if(rand.nextDouble() <= FALCON_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
+                double roll = rand.nextDouble();
+                Location location = new Location(row, col);
+                if (roll <= FALCON_CREATION_PROBABILITY) {
                     Falcon falcon = new Falcon(true, location);
                     field.placeAnimal(falcon, location);
-                }
-                else if(rand.nextDouble() <= SNAKE_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
+                } else if (roll <= FALCON_CREATION_PROBABILITY
+                        + SNAKE_CREATION_PROBABILITY) {
                     Snake snake = new Snake(true, location);
                     field.placeAnimal(snake, location);
-                } else if(rand.nextDouble() <= LIZARD_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
+                } else if (roll <= FALCON_CREATION_PROBABILITY
+                        + SNAKE_CREATION_PROBABILITY
+                        + LIZARD_CREATION_PROBABILITY) {
                     Lizard lizard = new Lizard(true, location);
                     field.placeAnimal(lizard, location);
-                } else if(rand.nextDouble() <= JERBOA_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
+                } else if (roll <= FALCON_CREATION_PROBABILITY
+                        + SNAKE_CREATION_PROBABILITY
+                        + LIZARD_CREATION_PROBABILITY
+                        + JERBOA_CREATION_PROBABILITY) {
                     Jerboa jerboa = new Jerboa(true, location);
                     field.placeAnimal(jerboa, location);
-                } else if(rand.nextDouble() <= CAMEL_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
+                } else if (roll <= FALCON_CREATION_PROBABILITY
+                        + SNAKE_CREATION_PROBABILITY
+                        + LIZARD_CREATION_PROBABILITY
+                        + JERBOA_CREATION_PROBABILITY
+                        + CAMEL_CREATION_PROBABILITY) {
                     Camel camel = new Camel(true, location);
                     field.placeAnimal(camel, location);
-                } else if(rand.nextDouble() <= BUSH_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
+                } else if (roll <= FALCON_CREATION_PROBABILITY
+                        + SNAKE_CREATION_PROBABILITY
+                        + LIZARD_CREATION_PROBABILITY
+                        + JERBOA_CREATION_PROBABILITY
+                        + CAMEL_CREATION_PROBABILITY
+                        + BUSH_CREATION_PROBABILITY) {
                     Bush bush = new Bush(location);
                     field.placePlant(bush, location);
-                } else if(rand.nextDouble() <= NAKHLA_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
+                } else if (roll <= FALCON_CREATION_PROBABILITY
+                        + SNAKE_CREATION_PROBABILITY
+                        + LIZARD_CREATION_PROBABILITY
+                        + JERBOA_CREATION_PROBABILITY
+                        + CAMEL_CREATION_PROBABILITY
+                        + BUSH_CREATION_PROBABILITY
+                        + NAKHLA_CREATION_PROBABILITY) {
                     Nakhla nakhla = new Nakhla(location);
                     field.placePlant(nakhla, location);
                 }
@@ -228,7 +258,19 @@ public class Simulator
     }
 
     public String getDisplayTime(){
-        return String.format("%02d:%02d", (step*MINUTES_PER_STEP / 60) % 24, step*MINUTES_PER_STEP % 60) + " (" + getTimePeriod() + ")";
+        return String.format("%02d:%02d", (step*MINUTES_PER_STEP / 60) % 24, step*MINUTES_PER_STEP % 60) + " (" + getTimePeriod() + ")" + " - Weather: " + currentWeather;
+    }
+
+    public void updateWeather() {
+        Random rand = Randomizer.getRandom();
+        int weatherRoll = rand.nextInt(100);
+        if (weatherRoll < 20) {
+            currentWeather = Weather.RAIN;
+        } else if (weatherRoll < 40) {
+            currentWeather = Weather.SANDSTORM;
+        } else {
+            currentWeather = Weather.NORMAL;
+        }
     }
 
 

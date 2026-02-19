@@ -3,7 +3,7 @@ import java.util.Random;
 /**
  * A simple model of a fox.
  * Foxes age, move, eat rabbits, and die.
- * 
+ *
  * @author Muhammad A Ehsan & Faisal AlKhalifa
  * @version 1
  */
@@ -13,7 +13,7 @@ public class Falcon extends Animal
     private static final Class<?>[] preys = {Snake.class, Jerboa.class, Lizard.class};
 
     private static final Class<?>[] predators = {};
-    
+
     private static final TimePeriod[] restingPeriods = {TimePeriod.NIGHT, TimePeriod.EVENING};
 
     private static final SpeciesConfig CONFIG = SimulationConfig.FALCON;

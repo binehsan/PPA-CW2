@@ -108,11 +108,16 @@ public abstract class Animal extends Species {
     /**
      * @param location
      * @param currentField
+     * @param currentWeather
      * @return
      */
-    public boolean tryFlee(Location location, Field currentField, Field nextFieldState) {
-        // Only flee from ADJACENT predators (radius 1)
-        List<Location> adjacentSpaces = currentField.getAdjacentLocations(location, 1);
+    public boolean tryFlee(Location location, Field currentField, Field nextFieldState, Weather currentWeather) {
+        float weatherMultiplier = switch (currentWeather) {
+            case SANDSTORM -> 0.5f;
+            default -> 1.0f;
+        };
+        int effectiveVisibility = (int) (this.getVisibility() * weatherMultiplier);
+        List<Location> adjacentSpaces = currentField.getAdjacentLocations(location, effectiveVisibility);
         for (Location adjacent : adjacentSpaces) {
             Animal tempAnimal = currentField.getAnimalAt(adjacent);
             if (tempAnimal == null) continue;
@@ -121,6 +126,7 @@ public abstract class Animal extends Species {
                     List<Location> freeLocations = nextFieldState.getFreeAdjacentLocations(getLocation(), 1);
                     if (!freeLocations.isEmpty()) {
                         setLocation(freeLocations.removeFirst());
+                        nextFieldState.placeAnimal(this, location);
                     }
                     // If no space to flee, stay put
                     return true;
@@ -137,7 +143,7 @@ public abstract class Animal extends Species {
         return true;
     }
 
-    public boolean tryHunt(Location location, Field currentField, Field nextFieldState) {
+    public boolean tryHunt(Location location, Field currentField, Field nextFieldState, Weather currentWeather) {
         List<Location> visibleSpaces = currentField.getAdjacentLocations(location, this.getVisibility());
         Location closestPreyLocation = null;
         Species closestPrey = null;
@@ -180,34 +186,38 @@ public abstract class Animal extends Species {
         }
 
         if (closestDistance == 1) {
-            this.setEnergyLevel(
-                    Math.min(this.getEnergyLevel() + closestPrey.getEnergyValue(), this.getMaxEnergyLevel()));
             if (closestPrey instanceof Plant plant) {
-                if (nextFieldState.getPlantAt(closestPreyLocation) == null) {
-                    plant.harvest();
-                    if (plant.isAlive()) {
-                        nextFieldState.placePlant(plant, closestPreyLocation);
-                    }
-                }
+                int gainedEnergy = plant.getEnergyValue();
+                this.setEnergyLevel(
+                        Math.min(this.getEnergyLevel() + gainedEnergy, this.getMaxEnergyLevel()));
+                plant.harvest();
+
+                // potential if block for setting field location To null.
                 if (!plant.blocksMovement()) {
                     this.setLocation(closestPreyLocation);
+                    nextFieldState.placeAnimal(this, closestPreyLocation); // testing
                 }
+
             } else if (closestPrey instanceof Animal animal) {
+                int gainedEnergy = Math.max(1, (int) Math.round(animal.getMaxEnergyLevel() * 0.10));
+                this.setEnergyLevel(
+                        Math.min(this.getEnergyLevel() + gainedEnergy, this.getMaxEnergyLevel()));
                 animal.setDead();
                 this.setLocation(closestPreyLocation);
+                nextFieldState.placeAnimal(this, closestPreyLocation); // testing
             }
             return true;
         }
 
-        int rowStep = Integer.compare(closestPreyLocation.row(), location.row());
-        int colStep = Integer.compare(closestPreyLocation.col(), location.col());
-        Location stepLocation = new Location(location.row() + rowStep, location.col() + colStep);
-        Plant stepPlant = nextFieldState.getPlantAt(stepLocation);
-        boolean stepBlocked = stepPlant != null && stepPlant.isAlive() && stepPlant.blocksMovement();
-        if (nextFieldState.getAnimalAt(stepLocation) == null && !stepBlocked) {
-            this.setLocation(stepLocation);
-            return true;
-        }
+//        int rowStep = Integer.compare(closestPreyLocation.row(), location.row());
+//        int colStep = Integer.compare(closestPreyLocation.col(), location.col());
+//        Location stepLocation = new Location(location.row() + rowStep, location.col() + colStep);
+//        Plant stepPlant = nextFieldState.getPlantAt(stepLocation);
+//        boolean stepBlocked = stepPlant != null && stepPlant.isAlive() && stepPlant.blocksMovement();
+//        if (nextFieldState.getAnimalAt(stepLocation) == null && !stepBlocked) {
+//            this.setLocation(stepLocation);
+//            return true;
+//        }
 
         return false;
     }
@@ -216,8 +226,8 @@ public abstract class Animal extends Species {
         if (this.getAge() < this.getBreedingAge())
             return false;
 
-        if (this.getGender() == 1)
-            return false; // skip if female
+//        if (this.getGender() == 1)
+//            return false; // removed temporarily
 
         if (energyLevel < this.getBreedThreshold())
             return false;
@@ -270,7 +280,7 @@ public abstract class Animal extends Species {
         return true;
     }
 
-    public void act(Field currentField, Field nextFieldState, TimePeriod currentTime) {
+    public void act(Field currentField, Field nextFieldState, TimePeriod currentTime, Weather currentWeather) {
 
         incrementAge(this.getMaxAge());
         incrementHunger();
@@ -282,12 +292,12 @@ public abstract class Animal extends Species {
         boolean acted = false;
 
         // 1. Flee if predator is adjacent
-        acted = tryFlee(this.getLocation(), currentField, nextFieldState);
+        acted = tryFlee(this.getLocation(), currentField, nextFieldState, currentWeather);
 
         if (!acted) {
             if (energyLevel < getRestThreshold()) {
                 // LOW energy: survival mode — hunt or rest
-                acted = tryHunt(this.getLocation(), currentField, nextFieldState);
+                acted = tryHunt(this.getLocation(), currentField, nextFieldState, currentWeather);
                 if (!acted) {
                     boolean isRestingTime = false;
                     for (TimePeriod time : getRestingPeriods()) {
@@ -302,12 +312,12 @@ public abstract class Animal extends Species {
                 }
             } else if (energyLevel < getBreedThreshold()) {
                 // MEDIUM energy: build reserves — hunt or wander
-                acted = tryHunt(this.getLocation(), currentField, nextFieldState);
+                acted = tryHunt(this.getLocation(), currentField, nextFieldState, currentWeather);
             } else {
                 // HIGH energy: breed first, then hunt to maintain
                 acted = tryBreed(this.getLocation(), currentField, nextFieldState);
                 if (!acted) {
-                    acted = tryHunt(this.getLocation(), currentField, nextFieldState);
+                    acted = tryHunt(this.getLocation(), currentField, nextFieldState, currentWeather);
                 }
             }
         }

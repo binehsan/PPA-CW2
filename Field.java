@@ -220,7 +220,7 @@ public class Field {
 
     /**
      * Return whether there is at least one rabbit and one fox in the field.
-     * 
+     *
      * @return true if there is at least one rabbit and one fox in the field.
      */
     public boolean isViable() {

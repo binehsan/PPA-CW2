@@ -5,7 +5,7 @@ public abstract class Plant extends Species {
     public Plant(int harvests, Location location) {
         super(location);
         this.harvests = harvests;
-    this.energyValue = SimulationConfig.PLANT_ENERGY;
+        this.energyValue = SimulationConfig.PLANT_ENERGY;
     }
 
     public void harvest() {

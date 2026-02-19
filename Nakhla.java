@@ -6,6 +6,6 @@ public class Nakhla extends Plant {
     @Override
     public boolean blocksMovement()
     {
-        return true;
+        return false; //CHANGE THIS TO TRUE IF YOU WANT NAKHLAS TO BLOCK MOVEMENT
     }
 }
