@@ -1,4 +1,6 @@
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * Represent a rectangular grid of field positions.
@@ -271,5 +273,18 @@ public class Field {
      */
     public int getWidth() {
         return width;
+    }
+
+    public Collection<Location> getRandomRegion(){
+        int col = rand.nextInt(width);
+        int row = rand.nextInt(depth);
+
+        Location randLocation = new Location(row, col);
+        return getAdjacentLocations(randLocation, 10);
+    }
+
+
+    public void colorLocation(Location location, Color color) {
+
     }
 }

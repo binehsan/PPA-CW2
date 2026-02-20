@@ -13,6 +13,7 @@ public abstract class Animal extends Species {
     // Male = 0, Female = 1
     private int gender;
 
+
     /**
      * Constructor for objects of class Animal.
      * 
@@ -144,7 +145,12 @@ public abstract class Animal extends Species {
     }
 
     public boolean tryHunt(Location location, Field currentField, Field nextFieldState, Weather currentWeather) {
-        List<Location> visibleSpaces = currentField.getAdjacentLocations(location, this.getVisibility());
+        float weatherMultiplier = switch (currentWeather) {
+            case SANDSTORM -> 0.5f;
+            default -> 1.0f;
+        };
+        int effectiveVisibility = (int) (this.getVisibility() * weatherMultiplier);
+        List<Location> visibleSpaces = currentField.getAdjacentLocations(location, effectiveVisibility);
         Location closestPreyLocation = null;
         Species closestPrey = null;
         int closestDistance = Integer.MAX_VALUE;
@@ -257,6 +263,12 @@ public abstract class Animal extends Species {
                                 .getDeclaredConstructor(boolean.class, Location.class)
                                 .newInstance(false, freeSpaces.get(i));
 
+                        if (this.isInfected() || tempAnimal.isInfected()) {
+                            tempAnimal.infect();
+                            this.infect();
+                            offspring.infect();
+                        }
+
                         nextFieldState.placeAnimal(offspring, freeSpaces.get(i));
                     } catch (Exception error) {
                         error.printStackTrace();
@@ -331,4 +343,10 @@ public abstract class Animal extends Species {
             nextFieldState.placeAnimal(this, getLocation());
         }
     }
+
+    public void infect(){
+        this.setEnergyLevel(this.getEnergyLevel() / 2);
+        this.setInfected(true);
+    }
+
 }

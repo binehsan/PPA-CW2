@@ -1,6 +1,6 @@
 public abstract class Plant extends Species {
     private int harvests;
-    private final int energyValue;
+    private int energyValue;
 
     public Plant(int harvests, Location location) {
         super(location);
@@ -28,5 +28,9 @@ public abstract class Plant extends Species {
     public boolean blocksMovement()
     {
         return true;
+    }
+
+    public void infect(){
+        energyValue = energyValue / 2;
     }
 }

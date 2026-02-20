@@ -1,10 +1,12 @@
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field containing 
  * rabbits and foxes.
  * 
- * @author David J. Barnes and Michael Kölling
+ * @author Muhammad Amen Ehsan & Faisal AlKhalifa
  * @version 7.1
  */
 public class Simulator
@@ -89,7 +91,8 @@ public class Simulator
         currentWeather = Weather.NORMAL;
         reportStats();
         for(int n = 1; n <= numSteps && field.isViable(); n++) {
-            simulateOneStep();
+            boolean hour = (step*MINUTES_PER_STEP) % 60 == 0;
+            simulateOneStep(hour);
             delay(50);         // adjust this to change execution speed
         }
     }
@@ -98,14 +101,34 @@ public class Simulator
      * Run the simulation from its current state for a single step.
      * Iterate over the whole field updating the state of each fox and rabbit.
      */
-    public void simulateOneStep()
+    public void simulateOneStep(boolean hour)
     {
         step++;
         TimePeriod currentTime = getTimePeriod();
 
         double weatherRoll = Randomizer.getRandom().nextDouble();
-        if (weatherRoll < 0.2)
+        if (hour && weatherRoll < 0.5)
             updateWeather();
+
+        double diseaseRoll = Randomizer.getRandom().nextDouble();
+        if (hour && diseaseRoll < SimulationConfig.DISEASE_OUTBREAK_CHANCE) {
+            Collection<Location> infectedLocations = field.getRandomRegion();
+            for (Location location : infectedLocations) {
+                Animal animal = field.getAnimalAt(location);
+                if (animal != null) {
+                    animal.infect();
+                    System.out.println("Disease outbreak at " + location + "Animal:");
+                    break;
+                }
+
+                Plant plant = field.getPlantAt(location);
+                if (plant != null) {
+                    plant.infect();
+                    System.out.println("Disease outbreak at " + location + "Plant:");
+                    break;
+                }
+            }
+        }
 
         // Use a separate Field to store the starting state of
         // the next step.

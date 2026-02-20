@@ -65,7 +65,12 @@ public class SimulatorView extends JFrame
         pack();
         setVisible(true);
     }
-    
+
+    public static void colorLocation(Location location, Color black) {
+        // color the box in location in the given color.
+
+    }
+
     /**
      * Define a color to be used for a given class of animal.
      * @param animalClass The animal's Class object.
@@ -112,7 +117,14 @@ public class SimulatorView extends JFrame
                 Species occupant = field.getSpeciesAt(new Location(row, col));
                 if(occupant != null) {
                     stats.incrementCount(occupant.getClass());
-                    fieldView.drawMark(col, row, getColor(occupant.getClass()));
+                    // use black if infected, otherwise the class color
+                    Color drawColor;
+                    if (occupant.isInfected()) {
+                        drawColor = Color.black;
+                    } else {
+                        drawColor = getColor(occupant.getClass());
+                    }
+                    fieldView.drawMark(col, row, drawColor);
                 }
                 else {
                     fieldView.drawMark(col, row, EMPTY_COLOR);

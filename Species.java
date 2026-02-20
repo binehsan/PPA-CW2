@@ -3,10 +3,12 @@ public class Species {
     private Location location;
     // Whether the animal is alive or not.
     private boolean alive;
+    private boolean infected;
 
     public Species(Location location) {
         this.location = location;
         this.alive = true;
+        this.infected = false;
     }
 
     /**
@@ -52,5 +54,14 @@ public class Species {
     public int getEnergyValue()
     {
         return 0;
+    }
+
+
+    public boolean isInfected() {
+        return infected;
+    }
+
+    public void setInfected(boolean infected) {
+        this.infected = infected;
     }
 }

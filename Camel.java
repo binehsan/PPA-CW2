@@ -11,7 +11,7 @@ import java.util.Random;
 public class Camel extends Animal
 {
     //COME UP WITH SOLUTION
-    private static final Class<?>[] preys = {Nakhla.class};
+    private static final Class<?>[] preys = {Nakhla.class, Bush.class};
 
     private static final Class<?>[] predators = {};
 
