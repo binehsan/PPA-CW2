@@ -1,16 +1,14 @@
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
 /**
- * A simple predator-prey simulator, based on a rectangular field containing 
+ * A simple predator-prey simulator, based on a rectangular field containing
  * rabbits and foxes.
  * 
  * @author Muhammad Amen Ehsan & Faisal AlKhalifa
  * @version 7.1
  */
-public class Simulator
-{
+public class Simulator {
     // Constants representing configuration information for the simulation.
     // The default width for the grid.
     private static final int DEFAULT_WIDTH = 120;
@@ -27,7 +25,6 @@ public class Simulator
     private static final double BUSH_CREATION_PROBABILITY = SimulationConfig.BUSH_SPAWN;
     private static final double NAKHLA_CREATION_PROBABILITY = SimulationConfig.NAKHLA_SPAWN;
 
-
     // The current state of the field.
     private Field field;
     // The current step of the simulation.
@@ -37,7 +34,6 @@ public class Simulator
 
     private Weather currentWeather;
 
-
     public static void main(String[] args) {
         Simulator s = new Simulator();
         s.runLongSimulation();
@@ -46,63 +42,60 @@ public class Simulator
     /**
      * Construct a simulation field with default size.
      */
-    public Simulator()
-    {
+    public Simulator() {
         this(DEFAULT_DEPTH, DEFAULT_WIDTH);
     }
-    
+
     /**
      * Create a simulation field with the given size.
+     * 
      * @param depth Depth of the field. Must be greater than zero.
      * @param width Width of the field. Must be greater than zero.
      */
-    public Simulator(int depth, int width)
-    {
-        if(width <= 0 || depth <= 0) {
+    public Simulator(int depth, int width) {
+        if (width <= 0 || depth <= 0) {
             System.out.println("The dimensions must be >= zero.");
             System.out.println("Using default values.");
             depth = DEFAULT_DEPTH;
             width = DEFAULT_WIDTH;
         }
-        
+
         field = new Field(depth, width);
         view = new SimulatorView(depth, width);
 
         reset();
     }
-    
+
     /**
-     * Run the simulation from its current state for a reasonably long 
+     * Run the simulation from its current state for a reasonably long
      * period (4000 steps).
      */
-    public void runLongSimulation()
-    {
+    public void runLongSimulation() {
 
         simulate(360);
     }
-    
+
     /**
      * Run the simulation for the given number of steps.
      * Stop before the given number of steps if it ceases to be viable.
+     * 
      * @param numSteps The number of steps to run for.
      */
-    public void simulate(int numSteps)
-    {
+    public void simulate(int numSteps) {
         currentWeather = Weather.NORMAL;
         reportStats();
-        for(int n = 1; n <= numSteps && field.isViable(); n++) {
-            boolean hour = (step*MINUTES_PER_STEP) % 60 == 0;
+        for (int n = 1; n <= numSteps && field.isViable(); n++) {
+            boolean hour = (step * MINUTES_PER_STEP) % 60 == 0;
             simulateOneStep(hour);
-            delay(50);         // adjust this to change execution speed
+            delay(50); // adjust this to change execution speed
         }
     }
-    
+
     /**
      * Run the simulation from its current state for a single step.
      * Iterate over the whole field updating the state of each fox and rabbit.
      */
-    public void simulateOneStep(boolean hour)
-    {
+    public void simulateOneStep(boolean hour) {
         step++;
         TimePeriod currentTime = getTimePeriod();
 
@@ -149,51 +142,47 @@ public class Simulator
         }
 
         Random rand = Randomizer.getRandom();
-        double weatherMultiplier = switch(currentWeather) {
-            case RAIN -> 1.5;
-            case SANDSTORM -> 0.5;
-            default -> 1.0;
-        };
+
         for (int row = 0; row < field.getDepth(); row++) {
             for (int col = 0; col < field.getWidth(); col++) {
                 Location location = new Location(row, col);
                 if (nextFieldState.getPlantAt(location) == null) {
-                    if (rand.nextDouble() <= SimulationConfig.BUSH_REGROW_CHANCE*weatherMultiplier) {
+                    if (rand.nextDouble() <= SimulationConfig.BUSH_REGROW_CHANCE
+                            * currentWeather.plantGrowthMultiplier()) {
                         nextFieldState.placePlant(new Bush(location), location);
                     } else if (nextFieldState.getAnimalAt(location) == null
-                            && rand.nextDouble() <= SimulationConfig.NAKHLA_REGROW_CHANCE*weatherMultiplier) {
+                            && rand.nextDouble() <= SimulationConfig.NAKHLA_REGROW_CHANCE
+                                    * currentWeather.plantGrowthMultiplier()) {
                         nextFieldState.placePlant(new Nakhla(location), location);
                     }
                 }
             }
         }
-        
+
         // Replace the old state with the new one.
         field = nextFieldState;
 
         reportStats();
         view.showStatus(getDisplayTime(), field);
     }
-        
+
     /**
      * Reset the simulation to a starting position.
      */
-    public void reset()
-    {
+    public void reset() {
         step = 0;
         populate();
         view.showStatus(getDisplayTime(), field);
     }
-    
+
     /**
      * Randomly populate the field with foxes and rabbits.
      */
-    private void populate()
-    {
+    private void populate() {
         Random rand = Randomizer.getRandom();
         field.clear();
-        for(int row = 0; row < field.getDepth(); row++) {
-            for(int col = 0; col < field.getWidth(); col++) {
+        for (int row = 0; row < field.getDepth(); row++) {
+            for (int col = 0; col < field.getWidth(); col++) {
                 double roll = rand.nextDouble();
                 Location location = new Location(row, col);
                 if (roll <= FALCON_CREATION_PROBABILITY) {
@@ -247,28 +236,26 @@ public class Simulator
     /**
      * Report on the number of each type of animal in the field.
      */
-    public void reportStats()
-    {
-        //System.out.print("Step: " + step + " ");
+    public void reportStats() {
+        // System.out.print("Step: " + step + " ");
         field.fieldStats(step);
     }
-    
+
     /**
      * Pause for a given time.
+     * 
      * @param milliseconds The time to pause for, in milliseconds
      */
-    private void delay(int milliseconds)
-    {
+    private void delay(int milliseconds) {
         try {
             Thread.sleep(milliseconds);
-        }
-        catch(InterruptedException e) {
+        } catch (InterruptedException e) {
             // ignore
         }
     }
 
     public TimePeriod getTimePeriod() {
-        int hour = (step*MINUTES_PER_STEP / 60) % 24;
+        int hour = (step * MINUTES_PER_STEP / 60) % 24;
         if (hour >= 6 && hour < 12) {
             return TimePeriod.MORNING;
         } else if (hour >= 12 && hour < 18) {
@@ -280,8 +267,9 @@ public class Simulator
         }
     }
 
-    public String getDisplayTime(){
-        return String.format("%02d:%02d", (step*MINUTES_PER_STEP / 60) % 24, step*MINUTES_PER_STEP % 60) + " (" + getTimePeriod() + ")" + " - Weather: " + currentWeather;
+    public String getDisplayTime() {
+        return String.format("%02d:%02d", (step * MINUTES_PER_STEP / 60) % 24, step * MINUTES_PER_STEP % 60) + " ("
+                + getTimePeriod() + ")" + " - Weather: " + currentWeather;
     }
 
     public void updateWeather() {
@@ -295,8 +283,5 @@ public class Simulator
             currentWeather = Weather.NORMAL;
         }
     }
-
-
-
 
 }

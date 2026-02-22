@@ -13,7 +13,6 @@ public abstract class Animal extends Species {
     // Male = 0, Female = 1
     private int gender;
 
-
     /**
      * Constructor for objects of class Animal.
      * 
@@ -106,192 +105,6 @@ public abstract class Animal extends Species {
 
     abstract public Random getRand();
 
-    /**
-     * @param location
-     * @param currentField
-     * @param currentWeather
-     * @return
-     */
-    public boolean tryFlee(Location location, Field currentField, Field nextFieldState, Weather currentWeather) {
-        float weatherMultiplier = switch (currentWeather) {
-            case SANDSTORM -> 0.5f;
-            default -> 1.0f;
-        };
-        int effectiveVisibility = (int) (this.getVisibility() * weatherMultiplier);
-        List<Location> adjacentSpaces = currentField.getAdjacentLocations(location, effectiveVisibility);
-        for (Location adjacent : adjacentSpaces) {
-            Animal tempAnimal = currentField.getAnimalAt(adjacent);
-            if (tempAnimal == null) continue;
-            for (Class<?> predator : this.getPredators()) {
-                if (predator.isInstance(tempAnimal)) {
-                    List<Location> freeLocations = nextFieldState.getFreeAdjacentLocations(getLocation(), 1);
-                    if (!freeLocations.isEmpty()) {
-                        setLocation(freeLocations.removeFirst());
-                        nextFieldState.placeAnimal(this, location);
-                    }
-                    // If no space to flee, stay put
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public boolean tryRest(Location location, Field currentField) {
-        // Recover energy while resting (up to restThreshold)
-        int recovery = Math.max(1, this.getRestThreshold() / 3);
-        this.setEnergyLevel(Math.min(this.getEnergyLevel() + recovery, this.getMaxEnergyLevel()));
-        return true;
-    }
-
-    public boolean tryHunt(Location location, Field currentField, Field nextFieldState, Weather currentWeather) {
-        float weatherMultiplier = switch (currentWeather) {
-            case SANDSTORM -> 0.5f;
-            default -> 1.0f;
-        };
-        int effectiveVisibility = (int) (this.getVisibility() * weatherMultiplier);
-        List<Location> visibleSpaces = currentField.getAdjacentLocations(location, effectiveVisibility);
-        Location closestPreyLocation = null;
-        Species closestPrey = null;
-        int closestDistance = Integer.MAX_VALUE;
-
-        for (Location visible : visibleSpaces) {
-            Animal animalTarget = currentField.getAnimalAt(visible);
-            if (animalTarget != null && animalTarget.isAlive()) {
-                for (Class<?> prey : this.getPrey()) {
-                    if (prey.isInstance(animalTarget)) {
-                        int distance = Math.abs(visible.row() - location.row())
-                                + Math.abs(visible.col() - location.col());
-                        if (distance < closestDistance) {
-                            closestDistance = distance;
-                            closestPreyLocation = visible;
-                            closestPrey = animalTarget;
-                        }
-                    }
-                }
-            }
-
-            Plant plantTarget = currentField.getPlantAt(visible);
-            if (plantTarget != null && plantTarget.isAlive()) {
-                for (Class<?> prey : this.getPrey()) {
-                    if (prey.isInstance(plantTarget)) {
-                        int distance = Math.abs(visible.row() - location.row())
-                                + Math.abs(visible.col() - location.col());
-                        if (distance < closestDistance) {
-                            closestDistance = distance;
-                            closestPreyLocation = visible;
-                            closestPrey = plantTarget;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (closestPreyLocation == null || closestPrey == null) {
-            return false;
-        }
-
-        if (closestDistance == 1) {
-            if (closestPrey instanceof Plant plant) {
-                int gainedEnergy = plant.getEnergyValue();
-                this.setEnergyLevel(
-                        Math.min(this.getEnergyLevel() + gainedEnergy, this.getMaxEnergyLevel()));
-                plant.harvest();
-
-                // potential if block for setting field location To null.
-                if (!plant.blocksMovement()) {
-                    this.setLocation(closestPreyLocation);
-                    nextFieldState.placeAnimal(this, closestPreyLocation); // testing
-                }
-
-            } else if (closestPrey instanceof Animal animal) {
-                int gainedEnergy = Math.max(1, (int) Math.round(animal.getMaxEnergyLevel() * 0.10));
-                this.setEnergyLevel(
-                        Math.min(this.getEnergyLevel() + gainedEnergy, this.getMaxEnergyLevel()));
-                animal.setDead();
-                this.setLocation(closestPreyLocation);
-                nextFieldState.placeAnimal(this, closestPreyLocation); // testing
-            }
-            return true;
-        }
-
-//        int rowStep = Integer.compare(closestPreyLocation.row(), location.row());
-//        int colStep = Integer.compare(closestPreyLocation.col(), location.col());
-//        Location stepLocation = new Location(location.row() + rowStep, location.col() + colStep);
-//        Plant stepPlant = nextFieldState.getPlantAt(stepLocation);
-//        boolean stepBlocked = stepPlant != null && stepPlant.isAlive() && stepPlant.blocksMovement();
-//        if (nextFieldState.getAnimalAt(stepLocation) == null && !stepBlocked) {
-//            this.setLocation(stepLocation);
-//            return true;
-//        }
-
-        return false;
-    }
-
-    public boolean tryBreed(Location location, Field currentField, Field nextFieldState) {
-        if (this.getAge() < this.getBreedingAge())
-            return false;
-
-//        if (this.getGender() == 1)
-//            return false; // removed temporarily
-
-        if (energyLevel < this.getBreedThreshold())
-            return false;
-
-        // Probability check gates the whole breeding attempt
-        if (this.getRand().nextDouble() > this.getBreedingProbability())
-            return false;
-
-        List<Location> adjacentSpaces = currentField.getAdjacentLocations(location, this.getVisibility());
-        for (Location adjacent : adjacentSpaces) {
-            Animal tempAnimal = currentField.getAnimalAt(adjacent);
-
-            if (tempAnimal == null)
-                continue;
-            if (tempAnimal.getAge() < tempAnimal.getBreedingAge())
-                continue;
-
-            if (tempAnimal.getClass().equals(this.getClass()) && tempAnimal.getGender() == 1) {
-                // Offspring ONLY in adjacent cells (radius 1)
-                List<Location> freeSpaces = nextFieldState.getFreeAdjacentLocations(location, 1);
-
-                int numOffspring = this.getRand().nextInt(this.getMaxOffspring()) + 1;
-                for (int i = 0; i < Math.min(freeSpaces.size(), numOffspring); i++) {
-                    try {
-                        Class<?> tempClass = this.getClass();
-                        Animal offspring = (Animal) tempClass
-                                .getDeclaredConstructor(boolean.class, Location.class)
-                                .newInstance(false, freeSpaces.get(i));
-
-                        if (this.isInfected() || tempAnimal.isInfected()) {
-                            tempAnimal.infect();
-                            this.infect();
-                            offspring.infect();
-                        }
-
-                        nextFieldState.placeAnimal(offspring, freeSpaces.get(i));
-                    } catch (Exception error) {
-                        error.printStackTrace();
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public boolean tryWander(Location location, Field currentField, Field nextFieldState) {
-        List<Location> freeLocations = nextFieldState.getFreeAdjacentLocations(getLocation(), 1);
-        if (!freeLocations.isEmpty()) {
-            setLocation(freeLocations.removeFirst());
-        }
-        // If no space, stay put — do NOT kill
-        return true;
-    }
-
     public void act(Field currentField, Field nextFieldState, TimePeriod currentTime, Weather currentWeather) {
 
         incrementAge(this.getMaxAge());
@@ -304,12 +117,12 @@ public abstract class Animal extends Species {
         boolean acted = false;
 
         // 1. Flee if predator is adjacent
-        acted = tryFlee(this.getLocation(), currentField, nextFieldState, currentWeather);
+        acted = AnimalFlee.tryFlee(this, currentField, nextFieldState, currentWeather);
 
         if (!acted) {
             if (energyLevel < getRestThreshold()) {
                 // LOW energy: survival mode — hunt or rest
-                acted = tryHunt(this.getLocation(), currentField, nextFieldState, currentWeather);
+                acted = AnimalHunt.tryHunt(this, currentField, nextFieldState, currentWeather);
                 if (!acted) {
                     boolean isRestingTime = false;
                     for (TimePeriod time : getRestingPeriods()) {
@@ -319,24 +132,24 @@ public abstract class Animal extends Species {
                         }
                     }
                     if (isRestingTime) {
-                        acted = tryRest(this.getLocation(), currentField);
+                        acted = AnimalRest.tryRest(this);
                     }
                 }
             } else if (energyLevel < getBreedThreshold()) {
                 // MEDIUM energy: build reserves — hunt or wander
-                acted = tryHunt(this.getLocation(), currentField, nextFieldState, currentWeather);
+                acted = AnimalHunt.tryHunt(this, currentField, nextFieldState, currentWeather);
             } else {
                 // HIGH energy: breed first, then hunt to maintain
-                acted = tryBreed(this.getLocation(), currentField, nextFieldState);
+                acted = AnimalBreed.tryBreed(this, currentField, nextFieldState);
                 if (!acted) {
-                    acted = tryHunt(this.getLocation(), currentField, nextFieldState, currentWeather);
+                    acted = AnimalHunt.tryHunt(this, currentField, nextFieldState, currentWeather);
                 }
             }
         }
 
         // Fallback: wander
         if (!acted) {
-            tryWander(this.getLocation(), currentField, nextFieldState);
+            AnimalWander.tryWander(this, nextFieldState);
         }
 
         if (isAlive()) {
@@ -344,7 +157,7 @@ public abstract class Animal extends Species {
         }
     }
 
-    public void infect(){
+    public void infect() {
         this.setEnergyLevel(this.getEnergyLevel() / 2);
         this.setInfected(true);
     }
