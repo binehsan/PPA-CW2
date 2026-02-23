@@ -1,15 +1,15 @@
 import java.util.Random;
 
 /**
- * A simple model of a fox.
- * Foxes age, move, eat rabbits, and die.
+ * A model of a Falcon in the desert simulation
+ * 
+ * This animal feeds on the Snake, Jerboa, and Lizard and has no predators
  *
- * @author Muhammad A Ehsan & Faisal AlKhalifa
- * @version 1
+ * @author Muhammad bin Ehsan & Faisal Al-Khalifa
+ * @version 1.0
  */
 public class Falcon extends Animal
 {
-    //COME UP WITH SOLUTION
     private static final Class<?>[] preys = {Snake.class, Jerboa.class, Lizard.class};
 
     private static final Class<?>[] predators = {};

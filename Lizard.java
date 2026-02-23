@@ -1,15 +1,15 @@
 import java.util.Random;
 
 /**
- * A simple model of a fox.
- * Foxes age, move, eat rabbits, and die.
+ * A model of a Lizard in the desert simulation
+ * 
+ * This animal feeds on the Bush and is preyed upon by the Falcon and Snake
  *
- * @author David J. Barnes and Michael Kölling
- * @version 7.1
+ * @author Muhammad bin Ehsan & Faisal Al-Khalifa
+ * @version 1.0
  */
 public class Lizard extends Animal
 {
-    //COME UP WITH SOLUTION
     private static final Class<?>[] preys = {Bush.class};
 
     private static final Class<?>[] predators = {Falcon.class, Snake.class};

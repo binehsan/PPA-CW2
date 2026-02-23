@@ -1,7 +1,7 @@
 import java.util.*;
 
 /**
- * Common elements of foxes and rabbits.
+ * Holds the main behaviours of all animals in the simulation.
  *
  * @author Faisal AlKhalifa and Muhammad Amen bin Ehsan
  * @version 7.0

@@ -1,5 +1,11 @@
 import java.util.List;
 
+/**
+ * Deals with the animals' ability to breed
+ *
+ * @author Faisal AlKhalifa and Muhammad Amen bin Ehsan
+ * @version 7.0
+ */
 public class AnimalBreed {
     public static boolean tryBreed(Animal animal, Field currentField, Field nextFieldState) {
         Location location = animal.getLocation();
@@ -24,7 +30,7 @@ public class AnimalBreed {
             if (tempAnimal.getAge() < tempAnimal.getBreedingAge())
                 continue;
 
-            if (tempAnimal.getClass().equals(animal.getClass()) && tempAnimal.getGender() == 1) {
+            if (tempAnimal.getClass().equals(animal.getClass()) && tempAnimal.getGender() != animal.getGender()) {
                 // Offspring ONLY in adjacent cells (radius 1)
                 List<Location> freeSpaces = nextFieldState.getFreeAdjacentLocations(location, 1);
 

@@ -2,15 +2,15 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * A simple model of a fox.
- * Foxes age, move, eat rabbits, and die.
+ * A model of a Camel in the desert simulation
+ * 
+ * This animal feeds on the Nakhla and the Bush and has no predators
  *
  * @author Muhammad bin Ehsan & Faisal Al-Khalifa
  * @version 1.0
  */
 public class Camel extends Animal
 {
-    //COME UP WITH SOLUTION
     private static final Class<?>[] preys = {Nakhla.class, Bush.class};
 
     private static final Class<?>[] predators = {};

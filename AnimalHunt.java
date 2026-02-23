@@ -1,5 +1,11 @@
 import java.util.List;
 
+/**
+ * Deals with the animals' ability to hunt
+ *
+ * @author Faisal AlKhalifa and Muhammad Amen bin Ehsan
+ * @version 7.0
+ */
 public class AnimalHunt {
     public static boolean tryHunt(Animal animal, Field currentField, Field nextFieldState, Weather currentWeather) {
         Location location = animal.getLocation();
@@ -55,7 +61,6 @@ public class AnimalHunt {
                 // potential if block for setting field location To null.
                 if (!plant.blocksMovement()) {
                     animal.setLocation(closestPreyLocation);
-                    nextFieldState.placeAnimal(animal, closestPreyLocation); // testing
                 }
 
             } else if (closestPrey instanceof Animal prey) {
@@ -64,7 +69,6 @@ public class AnimalHunt {
                         Math.min(animal.getEnergyLevel() + gainedEnergy, animal.getMaxEnergyLevel()));
                 prey.setDead();
                 animal.setLocation(closestPreyLocation);
-                nextFieldState.placeAnimal(animal, closestPreyLocation); // testing
             }
             return true;
         }

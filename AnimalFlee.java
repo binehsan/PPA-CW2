@@ -1,5 +1,11 @@
 import java.util.List;
 
+/**
+ * Deals with the animals' ability to flee
+ *
+ * @author Faisal AlKhalifa and Muhammad Amen bin Ehsan
+ * @version 7.0
+ */
 public class AnimalFlee {
     public static boolean tryFlee(Animal animal, Field currentField, Field nextFieldState, Weather currentWeather) {
         Location location = animal.getLocation();
@@ -14,7 +20,6 @@ public class AnimalFlee {
                     List<Location> freeLocations = nextFieldState.getFreeAdjacentLocations(animal.getLocation(), 1);
                     if (!freeLocations.isEmpty()) {
                         animal.setLocation(freeLocations.removeFirst());
-                        nextFieldState.placeAnimal(animal, location);
                     }
                     // If no space to flee, stay put
                     return true;
