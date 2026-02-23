@@ -66,6 +66,12 @@ public class SimulatorView extends JFrame
         setVisible(true);
     }
 
+    /**
+     * Placeholder for coloring a single location in the field view.
+     *
+     * @param location The location to color.
+     * @param black The color to use.
+     */
     public static void colorLocation(Location location, Color black) {
         // color the box in location in the given color.
 
@@ -98,7 +104,7 @@ public class SimulatorView extends JFrame
 
     /**
      * Show the current status of the field.
-     * @param step Which iteration step it is.
+     * @param time The formatted time string for display.
      * @param field The field whose status is to be displayed.
      */
     public void showStatus(String time, Field field)

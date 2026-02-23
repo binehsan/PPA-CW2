@@ -7,6 +7,15 @@ import java.util.List;
  * @version 7.0
  */
 public class AnimalHunt {
+    /**
+     * Attempt to hunt the closest visible prey (animal or plant).
+     *
+     * @param animal The hunting animal.
+     * @param currentField The field containing current positions.
+     * @param nextFieldState The field for the next simulation step.
+     * @param currentWeather The current weather conditions.
+     * @return true if the animal hunted or moved to prey.
+     */
     public static boolean tryHunt(Animal animal, Field currentField, Field nextFieldState, Weather currentWeather) {
         Location location = animal.getLocation();
         int effectiveVisibility = (int) (animal.getVisibility() * currentWeather.visibilityMultiplier());

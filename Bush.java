@@ -8,10 +8,18 @@
  */
 public class Bush extends Plant {
 
+    /**
+     * Create a bush at the given location.
+     *
+     * @param location The bush's location.
+     */
     public Bush(Location location) {
         super(SimulationConfig.BUSH_HARVESTS, location);
     }
 
+    /**
+     * @return true if this plant blocks movement.
+     */
     @Override
     public boolean blocksMovement()
     {

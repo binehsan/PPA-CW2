@@ -1,3 +1,9 @@
+/**
+ * Weather conditions that affect visibility and plant growth in the simulation.
+ *
+ * @author Faisal AlKhalifa and Muhammad Amen bin Ehsan
+ * @version 7.0
+ */
 public enum Weather {
     RAIN {
         @Override
@@ -20,10 +26,16 @@ public enum Weather {
 
     };
 
+    /**
+     * @return Multiplier applied to plant regrowth chance.
+     */
     public double plantGrowthMultiplier() {
         return 1;
     }
 
+    /**
+     * @return Multiplier applied to animal visibility.
+     */
     public double visibilityMultiplier() {
         return 1;
     }

@@ -7,6 +7,13 @@ import java.util.List;
  * @version 7.0
  */
 public class AnimalWander {
+    /**
+     * Attempt to move the animal to a random adjacent free space.
+     *
+     * @param animal The animal that is wandering.
+     * @param nextFieldState The field for the next simulation step.
+     * @return true after attempting to move.
+     */
     public static boolean tryWander(Animal animal, Field nextFieldState) {
         List<Location> freeLocations = nextFieldState.getFreeAdjacentLocations(animal.getLocation(), 1);
         if (!freeLocations.isEmpty()) {

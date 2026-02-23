@@ -87,7 +87,7 @@ public class FieldStats
     /**
      * Determine whether the simulation is still viable.
      * I.e., should it continue to run.
-     * @return true If there is more than one species alive.
+     * @return true if at least one living animal remains.
      */
     public boolean isViable(Field field)
     {

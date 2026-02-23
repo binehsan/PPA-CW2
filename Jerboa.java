@@ -31,10 +31,10 @@ public class Jerboa extends Animal
     // Individual characteristics (instance fields).
 
     /**
-     * Create a fox. A fox can be created as a new born (age zero
-     * and not hungry) or with a random age and food level.
+     * Create a jerboa. A jerboa can be created as a new born (age zero)
+     * or with a random age.
      *
-     * @param randomAge If true, the fox will have random age and hunger level.
+     * @param randomAge If true, the jerboa will have a random age.
      * @param location The location within the field.
      */
     public Jerboa(boolean randomAge, Location location)
@@ -42,50 +42,86 @@ public class Jerboa extends Animal
         super(location, randomAge, MAX_ENERGY);
     }
 
+    /**
+     * @return The breeding age for jerboas.
+     */
     public int getBreedingAge() {
         return CONFIG.breedingAge();
     }
 
+    /**
+     * @return The visibility range for jerboas.
+     */
     public int getVisibility() {
         return visibility;
     }
 
+    /**
+     * @return The predator classes for jerboas.
+     */
     public Class<?>[] getPredators(){
         return predators;
     }
 
+    /**
+     * @return The time periods in which jerboas rest.
+     */
     public TimePeriod[] getRestingPeriods(){
         return restingPeriods;
     }
 
+    /**
+     * @return The energy threshold below which jerboas rest.
+     */
     public int getRestThreshold(){
         return REST_THRESHOLD;
     }
 
+    /**
+     * @return The energy threshold above which jerboas can breed.
+     */
     public int getBreedThreshold(){
         return BREEDING_THRESHOLD;
     }
 
+    /**
+     * @return The maximum age for jerboas.
+     */
     public int getMaxAge() {
         return CONFIG.maxAge();
     }
 
+    /**
+     * @return The maximum offspring count for jerboas.
+     */
     public int getMaxOffspring() {
         return CONFIG.maxOffspring();
     }
 
+    /**
+     * @return The maximum energy level for jerboas.
+     */
     public int getMaxEnergyLevel() {
         return CONFIG.maxEnergy();
     }
 
+    /**
+     * @return The probability of breeding for jerboas.
+     */
     public double getBreedingProbability() {
         return CONFIG.breedingProbability();
     }
 
+    /**
+     * @return The prey classes for jerboas.
+     */
     public Class<?>[] getPrey(){
         return preys;
     }
 
+    /**
+     * @return The shared random generator for jerboas.
+     */
     public Random getRand() {
         return rand;
     }

@@ -7,6 +7,12 @@ import java.util.List;
  * @version 7.0
  */
 public class AnimalBreed {
+    /**
+     * @param animal The animal that tries to breed
+     * @param currentField The current field of animals/plants
+     * @param nextFieldState The field for the next step in the simulation
+     * @return whether the animal has bred or not.
+     */
     public static boolean tryBreed(Animal animal, Field currentField, Field nextFieldState) {
         Location location = animal.getLocation();
         

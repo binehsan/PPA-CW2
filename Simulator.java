@@ -2,8 +2,8 @@ import java.util.*;
 import java.util.List;
 
 /**
- * A simple predator-prey simulator, based on a rectangular field containing
- * rabbits and foxes.
+ * A desert ecosystem simulator based on a rectangular field containing
+ * animals and plants that interact over time.
  * 
  * @author Muhammad Amen Ehsan & Faisal AlKhalifa
  * @version 7.1
@@ -34,6 +34,7 @@ public class Simulator {
 
     private Weather currentWeather;
 
+    
     public static void main(String[] args) {
         Simulator s = new Simulator();
         s.runLongSimulation();
@@ -93,7 +94,9 @@ public class Simulator {
 
     /**
      * Run the simulation from its current state for a single step.
-     * Iterate over the whole field updating the state of each fox and rabbit.
+    * Iterate over the whole field updating the state of each animal.
+    *
+    * @param hour true if a full hour has elapsed in the simulation.
      */
     public void simulateOneStep(boolean hour) {
         step++;
@@ -176,7 +179,7 @@ public class Simulator {
     }
 
     /**
-     * Randomly populate the field with foxes and rabbits.
+    * Randomly populate the field with animals and plants.
      */
     private void populate() {
         Random rand = Randomizer.getRandom();
@@ -254,6 +257,11 @@ public class Simulator {
         }
     }
 
+    /**
+     * Get the current time period based on the simulation step.
+     *
+     * @return The current time period.
+     */
     public TimePeriod getTimePeriod() {
         int hour = (step * MINUTES_PER_STEP / 60) % 24;
         if (hour >= 6 && hour < 12) {
@@ -267,11 +275,19 @@ public class Simulator {
         }
     }
 
+    /**
+     * Get a formatted display string for the current simulation time.
+     *
+     * @return The formatted time string.
+     */
     public String getDisplayTime() {
         return String.format("%02d:%02d", (step * MINUTES_PER_STEP / 60) % 24, step * MINUTES_PER_STEP % 60) + " ("
                 + getTimePeriod() + ")" + " - Weather: " + currentWeather;
     }
 
+    /**
+     * Update the current weather using weighted random selection.
+     */
     public void updateWeather() {
         Random rand = Randomizer.getRandom();
         int weatherRoll = rand.nextInt(100);
