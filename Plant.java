@@ -8,6 +8,9 @@ public abstract class Plant extends Species {
         this.energyValue = SimulationConfig.PLANT_ENERGY;
     }
 
+    /**
+     *
+     */
     public void harvest() {
         harvests--;
         if (harvests == 0) {
@@ -16,6 +19,9 @@ public abstract class Plant extends Species {
         }
     }
 
+    /**
+     * @return energyValue (the energy value of this plant when harvested).
+     */
     @Override
     public int getEnergyValue()
     {
@@ -30,7 +36,5 @@ public abstract class Plant extends Species {
         return true;
     }
 
-    public void infect(){
-        energyValue = energyValue / 2;
-    }
+    // removed infect.
 }

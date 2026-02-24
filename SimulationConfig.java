@@ -27,7 +27,7 @@ public final class SimulationConfig {
 
     public static final SpeciesConfig SNAKE = new SpeciesConfig(
             10, 120, 0.12, 2,
-            3, 22, 5, 12);
+            3, 22, 5, 12); // changes breed to 0.15 from 0,12
 
     public static final SpeciesConfig LIZARD = new SpeciesConfig(
             3, 110, 0.50, 6,

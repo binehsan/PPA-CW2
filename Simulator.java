@@ -6,7 +6,7 @@ import java.util.List;
  * rabbits and foxes.
  * 
  * @author Muhammad Amen Ehsan & Faisal AlKhalifa
- * @version 7.1
+ * @version 1.0
  */
 public class Simulator {
     // Constants representing configuration information for the simulation.
@@ -114,12 +114,7 @@ public class Simulator {
                     break;
                 }
 
-                Plant plant = field.getPlantAt(location);
-                if (plant != null) {
-                    plant.infect();
-                    System.out.println("Disease outbreak at " + location + "Plant:");
-                    break;
-                }
+                // removed plant infection to comply with doc requirements.
             }
         }
 
