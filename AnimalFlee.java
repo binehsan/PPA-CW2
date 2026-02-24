@@ -7,6 +7,15 @@ import java.util.List;
  * @version 7.0
  */
 public class AnimalFlee {
+    /**
+     * Attempt to flee from nearby predators, moving the animal if possible.
+     *
+     * @param animal The animal attempting to flee.
+     * @param currentField The field containing current positions.
+     * @param nextFieldState The field for the next simulation step.
+     * @param currentWeather The current weather conditions.
+     * @return true if the animal attempted to flee.
+     */
     public static boolean tryFlee(Animal animal, Field currentField, Field nextFieldState, Weather currentWeather) {
         Location location = animal.getLocation();
         int effectiveVisibility = (int) (animal.getVisibility() * currentWeather.visibilityMultiplier());

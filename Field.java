@@ -98,6 +98,7 @@ public class Field {
      * Get a shuffled list of the free adjacent locations.
      * 
      * @param location Get locations adjacent to this.
+    * @param visibility The visibility radius to search within.
      * @return A list of free adjacent locations.
      */
     public List<Location> getFreeAdjacentLocations(Location location, int visibility) {
@@ -125,6 +126,7 @@ public class Field {
      * All locations will lie within the grid.
      * 
      * @param location The location from which to generate adjacencies.
+    * @param visiblity The visibility radius to search within.
      * @return A list of locations adjacent to that given.
      */
     public List<Location> getAdjacentLocations(Location location, int visiblity) {
@@ -154,7 +156,9 @@ public class Field {
     }
 
     /**
-     * Print out the number of foxes and rabbits in the field.
+     * Print out the number of each species in the field.
+     *
+     * @param step The current simulation step.
      */
     public void fieldStats(int step) {
         int numFalcons = 0,
@@ -221,9 +225,9 @@ public class Field {
     }
 
     /**
-     * Return whether there is at least one rabbit and one fox in the field.
+    * Return whether there is at least one living animal in the field.
      *
-     * @return true if there is at least one rabbit and one fox in the field.
+    * @return true if at least one living animal remains.
      */
     public boolean isViable() {
         for (Animal anAnimal : animals) {
@@ -236,6 +240,8 @@ public class Field {
 
     /**
      * Get the list of animals.
+     *
+     * @return The list of animals in the field.
      */
     public List<Animal> getAnimals() {
         return animals;
@@ -243,6 +249,8 @@ public class Field {
 
     /**
      * Get all species (animals + plants) in the field.
+     *
+     * @return All species in the field.
      */
     public Collection<Species> getSpecies() {
         List<Species> species = new ArrayList<>(animalsByLocation.values());
@@ -252,6 +260,8 @@ public class Field {
 
     /**
      * Get all plants.
+     *
+     * @return All plants in the field.
      */
     public Collection<Plant> getPlants() {
         return plantsByLocation.values();
@@ -275,6 +285,11 @@ public class Field {
         return width;
     }
 
+    /**
+     * Get a random region of locations within a fixed radius.
+     *
+     * @return A collection of locations around a random point.
+     */
     public Collection<Location> getRandomRegion(){
         int col = rand.nextInt(width);
         int row = rand.nextInt(depth);
@@ -284,6 +299,12 @@ public class Field {
     }
 
 
+    /**
+     * Color a location in the field view (placeholder for UI logic).
+     *
+     * @param location The location to color.
+     * @param color The color to use.
+     */
     public void colorLocation(Location location, Color color) {
 
     }

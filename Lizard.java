@@ -31,10 +31,10 @@ public class Lizard extends Animal
     // Individual characteristics (instance fields).
 
     /**
-     * Create a fox. A fox can be created as a new born (age zero
-     * and not hungry) or with a random age and food level.
+     * Create a lizard. A lizard can be created as a new born (age zero)
+     * or with a random age.
      *
-     * @param randomAge If true, the fox will have random age and hunger level.
+     * @param randomAge If true, the lizard will have a random age.
      * @param location The location within the field.
      */
     public Lizard(boolean randomAge, Location location)
@@ -42,50 +42,86 @@ public class Lizard extends Animal
         super(location, randomAge, MAX_ENERGY);
     }
 
+    /**
+     * @return The breeding age for lizards.
+     */
     public int getBreedingAge() {
         return CONFIG.breedingAge();
     }
 
+    /**
+     * @return The visibility range for lizards.
+     */
     public int getVisibility() {
         return visibility;
     }
 
+    /**
+     * @return The predator classes for lizards.
+     */
     public Class<?>[] getPredators(){
         return predators;
     }
 
+    /**
+     * @return The time periods in which lizards rest.
+     */
     public TimePeriod[] getRestingPeriods(){
         return restingPeriods;
     }
 
+    /**
+     * @return The energy threshold below which lizards rest.
+     */
     public int getRestThreshold(){
         return REST_THRESHOLD;
     }
 
+    /**
+     * @return The energy threshold above which lizards can breed.
+     */
     public int getBreedThreshold(){
         return BREEDING_THRESHOLD;
     }
 
+    /**
+     * @return The maximum age for lizards.
+     */
     public int getMaxAge() {
         return CONFIG.maxAge();
     }
 
+    /**
+     * @return The maximum offspring count for lizards.
+     */
     public int getMaxOffspring() {
         return CONFIG.maxOffspring();
     }
 
+    /**
+     * @return The maximum energy level for lizards.
+     */
     public int getMaxEnergyLevel() {
         return CONFIG.maxEnergy();
     }
 
+    /**
+     * @return The probability of breeding for lizards.
+     */
     public double getBreedingProbability() {
         return CONFIG.breedingProbability();
     }
 
+    /**
+     * @return The prey classes for lizards.
+     */
     public Class<?>[] getPrey(){
         return preys;
     }
 
+    /**
+     * @return The shared random generator for lizards.
+     */
     public Random getRand() {
         return rand;
     }

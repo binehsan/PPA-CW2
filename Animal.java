@@ -8,10 +8,12 @@ import java.util.*;
  */
 public abstract class Animal extends Species {
 
+    // Male = 0, Female = 1
+    private final int gender;
+
     private int energyLevel;
     private int age;
-    // Male = 0, Female = 1
-    private int gender;
+
 
     /**
      * Constructor for objects of class Animal.
@@ -32,31 +34,38 @@ public abstract class Animal extends Species {
         this.gender = this.getRand().nextInt(2);
     }
 
+    /**
+     * @return the animals current energy level
+     */
     public int getEnergyLevel() {
         return energyLevel;
     }
 
-    @Override
-    public int getEnergyValue() {
-        return energyLevel;
-    }
 
+    /**
+     * @param energyLevel the level to set this animal's energy to
+     */
     protected void setEnergyLevel(int energyLevel) {
         this.energyLevel = energyLevel;
     }
 
+    /**
+     * @return the animal's gender
+     */
     public int getGender() {
         return gender;
     }
 
-    protected void setGender(int gender) {
-        this.gender = gender;
-    }
-
+    /**
+     * @return the animal's age
+     */
     public int getAge() {
         return age;
     }
 
+    /**
+     * @param age the new age of this animal
+     */
     protected void setAge(int age) {
         this.age = age;
     }
@@ -80,6 +89,10 @@ public abstract class Animal extends Species {
             setDead();
         }
     }
+
+    // Abstract methods defined for every animal.
+    // This ensures that every animal has these fields in
+    // order to move the act class into the Animal class.
 
     abstract public int getVisibility();
 
@@ -105,6 +118,17 @@ public abstract class Animal extends Species {
 
     abstract public Random getRand();
 
+
+    /**
+     * This method encompasses the animals' behavioural logic.
+     * It outlines the flow of when to flee, breed, hunt,
+     * rest, and wander.
+     *
+     * @param currentField The current field of animals/plants
+     * @param nextFieldState The field for the next step in the simulation
+     * @param currentTime The time period for this step
+     * @param currentWeather The weather for this step
+     */
     public void act(Field currentField, Field nextFieldState, TimePeriod currentTime, Weather currentWeather) {
 
         incrementAge(this.getMaxAge());
@@ -157,6 +181,9 @@ public abstract class Animal extends Species {
         }
     }
 
+    /**
+     * Makes this animal infected.
+     */
     public void infect() {
         this.setEnergyLevel(this.getEnergyLevel() / 2);
         this.setInfected(true);
