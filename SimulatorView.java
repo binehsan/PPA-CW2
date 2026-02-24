@@ -26,6 +26,8 @@ public class SimulatorView extends JFrame
     private final JLabel timeLabel;
     private final JLabel population;
     private final FieldView fieldView;
+    private final JLabel statisticsLabel;
+    private final JLabel colorKeyLabel;
     
     // A map for storing colors for participants in the simulation
     private final Map<Class<?>, Color> colors;
@@ -53,7 +55,19 @@ public class SimulatorView extends JFrame
         setTitle("Desert Ecosystem Simulation");
         timeLabel = new JLabel(TIME_PREFIX, JLabel.CENTER);
         population = new JLabel(POPULATION_PREFIX, JLabel.CENTER);
-        
+        colorKeyLabel = new JLabel("", JLabel.CENTER);
+        statisticsLabel = new JLabel("", JLabel.CENTER);
+        //checks
+        population.setAlignmentX(Component.CENTER_ALIGNMENT);
+        statisticsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        colorKeyLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        colorKeyLabel.setText(" Falcon=Red Snake=Green Jerboa=Orange Lizard=Blue Camel=Magenta Bush=Dark Green Nakhla=Olive Green Infected=Black");
+        JPanel statsPanel = new JPanel();
+        statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
+        statsPanel.add(colorKeyLabel);
+        statsPanel.add(population);
+        statsPanel.add(statisticsLabel);
+
         setLocation(100, 50);
         
         fieldView = new FieldView(height, width);
@@ -61,7 +75,7 @@ public class SimulatorView extends JFrame
         Container contents = getContentPane();
         contents.add(timeLabel, BorderLayout.NORTH);
         contents.add(fieldView, BorderLayout.CENTER);
-        contents.add(population, BorderLayout.SOUTH);
+        contents.add(statsPanel, BorderLayout.SOUTH);
         pack();
         setVisible(true);
     }
@@ -102,12 +116,16 @@ public class SimulatorView extends JFrame
         }
     }
 
+    public FieldStats getFieldStats() {
+        return stats;
+    }
+
     /**
      * Show the current status of the field.
      * @param time The formatted time string for display.
      * @param field The field whose status is to be displayed.
      */
-    public void showStatus(String time, Field field)
+    public void showStatus(String time, Field field, PopulationHistory populationHistory)
     {
         if(!isVisible()) {
             setVisible(true);
@@ -140,6 +158,7 @@ public class SimulatorView extends JFrame
         stats.countFinished();
 
         population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
+        statisticsLabel.setText(populationHistory.getAvgString());
         fieldView.repaint();
     }
 

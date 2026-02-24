@@ -11,9 +11,9 @@ import java.util.List;
 public class Simulator {
     // Constants representing configuration information for the simulation.
     // The default width for the grid.
-    private static final int DEFAULT_WIDTH = 120;
+    private static final int DEFAULT_WIDTH = 126;
     // The default depth of the grid.
-    private static final int DEFAULT_DEPTH = 80;
+    private static final int DEFAULT_DEPTH = 92;
 
     private static final int MINUTES_PER_STEP = 4;
 
@@ -31,6 +31,8 @@ public class Simulator {
     private int step;
     // A graphical view of the simulation.
     private final SimulatorView view;
+
+    private PopulationHistory populationHistory = new PopulationHistory();
 
     private Weather currentWeather;
 
@@ -128,6 +130,9 @@ public class Simulator {
         List<Animal> animals = new ArrayList<>(field.getAnimals());
         for (Animal anAnimal : animals) {
             anAnimal.act(field, nextFieldState, currentTime, currentWeather);
+            int newPopulation = view.getFieldStats().getCountForSpecies(anAnimal.getClass());
+            populationHistory.updateAveragePopulation(anAnimal.getClass(), step, newPopulation);
+
         }
 
         for (Plant plant : field.getPlants()) {
@@ -135,6 +140,8 @@ public class Simulator {
                 Location location = plant.getLocation();
                 if (!plant.blocksMovement() || nextFieldState.getAnimalAt(location) == null) {
                     nextFieldState.placePlant(plant, location);
+                    int newPopulation = view.getFieldStats().getCountForSpecies(plant.getClass());
+                    populationHistory.updateAveragePopulation(plant.getClass(), step, newPopulation);
                 }
             }
         }
@@ -161,7 +168,7 @@ public class Simulator {
         field = nextFieldState;
 
         reportStats();
-        view.showStatus(getDisplayTime(), field);
+        view.showStatus(getDisplayTime(), field, populationHistory);
     }
 
     /**
@@ -170,7 +177,7 @@ public class Simulator {
     public void reset() {
         step = 0;
         populate();
-        view.showStatus(getDisplayTime(), field);
+        view.showStatus(getDisplayTime(), field, populationHistory);
     }
 
     /**
@@ -185,6 +192,7 @@ public class Simulator {
                 Location location = new Location(row, col);
                 if (roll <= FALCON_CREATION_PROBABILITY) {
                     Falcon falcon = new Falcon(true, location);
+                    populationHistory.addAnimalType(Falcon.class);
                     field.placeAnimal(falcon, location);
                 } else if (roll <= FALCON_CREATION_PROBABILITY
                         + SNAKE_CREATION_PROBABILITY) {
@@ -193,12 +201,14 @@ public class Simulator {
                 } else if (roll <= FALCON_CREATION_PROBABILITY
                         + SNAKE_CREATION_PROBABILITY
                         + LIZARD_CREATION_PROBABILITY) {
+                    populationHistory.addAnimalType(Lizard.class);
                     Lizard lizard = new Lizard(true, location);
                     field.placeAnimal(lizard, location);
                 } else if (roll <= FALCON_CREATION_PROBABILITY
                         + SNAKE_CREATION_PROBABILITY
                         + LIZARD_CREATION_PROBABILITY
                         + JERBOA_CREATION_PROBABILITY) {
+                    populationHistory.addAnimalType(Jerboa.class);
                     Jerboa jerboa = new Jerboa(true, location);
                     field.placeAnimal(jerboa, location);
                 } else if (roll <= FALCON_CREATION_PROBABILITY
@@ -206,6 +216,7 @@ public class Simulator {
                         + LIZARD_CREATION_PROBABILITY
                         + JERBOA_CREATION_PROBABILITY
                         + CAMEL_CREATION_PROBABILITY) {
+                    populationHistory.addAnimalType(Camel.class);
                     Camel camel = new Camel(true, location);
                     field.placeAnimal(camel, location);
                 } else if (roll <= FALCON_CREATION_PROBABILITY
@@ -214,6 +225,7 @@ public class Simulator {
                         + JERBOA_CREATION_PROBABILITY
                         + CAMEL_CREATION_PROBABILITY
                         + BUSH_CREATION_PROBABILITY) {
+                    populationHistory.addAnimalType(Bush.class);
                     Bush bush = new Bush(location);
                     field.placePlant(bush, location);
                 } else if (roll <= FALCON_CREATION_PROBABILITY
@@ -223,6 +235,7 @@ public class Simulator {
                         + CAMEL_CREATION_PROBABILITY
                         + BUSH_CREATION_PROBABILITY
                         + NAKHLA_CREATION_PROBABILITY) {
+                    populationHistory.addAnimalType(Nakhla.class);
                     Nakhla nakhla = new Nakhla(location);
                     field.placePlant(nakhla, location);
                 }

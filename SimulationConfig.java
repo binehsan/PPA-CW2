@@ -1,7 +1,7 @@
 
 public final class SimulationConfig {
     public static final double DISEASE_OUTBREAK_CHANCE = 0.4;
-
+    // config final values - to not change.
     private SimulationConfig() {
     }
 
@@ -26,7 +26,7 @@ public final class SimulationConfig {
             2, 25, 5, 14);
 
     public static final SpeciesConfig SNAKE = new SpeciesConfig(
-            10, 120, 0.12, 2,
+            10, 120, 0.18, 2,
             3, 22, 5, 12); // changes breed to 0.15 from 0,12
 
     public static final SpeciesConfig LIZARD = new SpeciesConfig(

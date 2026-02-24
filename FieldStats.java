@@ -114,4 +114,15 @@ public class FieldStats
         }
         countsValid = true;
     }
+
+    public int getCountForSpecies(Class<?> speciesClass)
+    {
+        Counter count = counters.get(speciesClass);
+        if(count == null) {
+            count = new Counter(speciesClass.getName());
+            counters.put(speciesClass, count);
+            return 0;
+        }
+        return count.getCount();
+    }
 }

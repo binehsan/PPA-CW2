@@ -299,6 +299,8 @@ public class Field {
     }
 
 
+
+
     /**
      * Color a location in the field view (placeholder for UI logic).
      *
