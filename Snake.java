@@ -9,12 +9,11 @@ import java.util.Random;
  */
 public class Snake extends Animal
 {
-    //COME UP WITH SOLUTION
     private static final Class<?>[] preys = {Lizard.class, Jerboa.class};
 
     private static final Class<?>[] predators = {Falcon.class};
 
-    private static final TimePeriod[] restingPeriods = {};
+    private static final TimePeriod[] restingPeriods = {TimePeriod.MORNING};
 
     // Characteristics shared by all foxes (class variables).
     private static final SpeciesConfig CONFIG = SimulationConfig.SNAKE;
