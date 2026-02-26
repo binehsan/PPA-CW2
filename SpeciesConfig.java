@@ -2,7 +2,7 @@
  * Immutable configuration values for a species' life-cycle traits.
  *
  * @author Faisal AlKhalifa and Muhammad Amen bin Ehsan
- * @version 7.0
+ * @version 1.0
  */
 public record SpeciesConfig(
         int breedingAge,

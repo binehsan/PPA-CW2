@@ -4,7 +4,7 @@ import java.util.List;
  * Deals with the animals' ability to breed
  *
  * @author Faisal AlKhalifa and Muhammad Amen bin Ehsan
- * @version 7.0
+ * @version 1.0
  */
 public class AnimalBreed {
     /**
@@ -15,13 +15,11 @@ public class AnimalBreed {
      */
     public static boolean tryBreed(Animal animal, Field currentField, Field nextFieldState) {
         Location location = animal.getLocation();
-        
+
+        // ensure within breeding age
         if (animal.getAge() < animal.getBreedingAge())
             return false;
 
-
-        if (animal.getEnergyLevel() < animal.getBreedThreshold())
-            return false;
 
         // Probability check gates the whole breeding attempt
         if (animal.getRand().nextDouble() > animal.getBreedingProbability())
@@ -33,6 +31,8 @@ public class AnimalBreed {
 
             if (tempAnimal == null)
                 continue;
+
+            // ensures partner is > breeding threshold
             if (tempAnimal.getAge() < tempAnimal.getBreedingAge())
                 continue;
 
@@ -56,7 +56,6 @@ public class AnimalBreed {
 
                         nextFieldState.placeAnimal(offspring, freeSpaces.get(i));
                     } catch (Exception error) {
-                        error.printStackTrace();
                         return false;
                     }
                 }

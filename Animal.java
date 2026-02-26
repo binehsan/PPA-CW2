@@ -4,7 +4,7 @@ import java.util.*;
  * Holds the main behaviours of all animals in the simulation.
  *
  * @author Faisal AlKhalifa and Muhammad Amen bin Ehsan
- * @version 7.0
+ * @version 1.0
  */
 public abstract class Animal extends Species {
 
@@ -19,6 +19,8 @@ public abstract class Animal extends Species {
      * Constructor for objects of class Animal.
      * 
      * @param location The animal's location.
+     * @param randomAge Whether the animal should be created with a random age (true) or start at age 0 (false).
+     * @param MAX_ENERGY_LEVEL The maximum energy level for this animal, used to initialize the energy level.
      */
     public Animal(Location location, boolean randomAge, int MAX_ENERGY_LEVEL) {
         super(location);
@@ -140,7 +142,7 @@ public abstract class Animal extends Species {
 
         boolean acted = false;
 
-        // 1. Flee if predator is adjacent
+        //Flee if predator is adjacent
         acted = AnimalFlee.tryFlee(this, currentField, nextFieldState, currentWeather);
 
         if (!acted) {
@@ -185,6 +187,9 @@ public abstract class Animal extends Species {
      * Makes this animal infected.
      */
     public void infect() {
+        if (this.isInfected()) {
+            return;
+        }
         this.setEnergyLevel(this.getEnergyLevel() / 2);
         this.setInfected(true);
     }

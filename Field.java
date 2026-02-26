@@ -6,8 +6,8 @@ import java.util.List;
  * Represent a rectangular grid of field positions.
  * Each position is able to store a single animal/object.
  * 
- * @author David J. Barnes and Michael Kölling
- * @version 7.0
+ * @author Muhammad Amen Ehsan and Faisal AlKhalifa
+ * @version 1.0
  */
 public class Field {
     // A random number generator for providing random locations.
@@ -298,16 +298,4 @@ public class Field {
         return getAdjacentLocations(randLocation, 10);
     }
 
-
-
-
-    /**
-     * Color a location in the field view (placeholder for UI logic).
-     *
-     * @param location The location to color.
-     * @param color The color to use.
-     */
-    public void colorLocation(Location location, Color color) {
-
-    }
 }

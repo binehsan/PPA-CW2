@@ -2,7 +2,7 @@
  * Weather conditions that affect visibility and plant growth in the simulation.
  *
  * @author Faisal AlKhalifa and Muhammad Amen bin Ehsan
- * @version 7.0
+ * @version 1.0
  */
 public enum Weather {
     RAIN {
@@ -23,7 +23,7 @@ public enum Weather {
         }
     },
     NORMAL {
-
+        // Uses default multipliers.
     };
 
     /**

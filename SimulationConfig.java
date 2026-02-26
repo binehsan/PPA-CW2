@@ -1,6 +1,10 @@
-
+/**
+ * Defines all the variables for each species and plant in the simulation.
+ * This class is not meant to be instantiated, but rather to provide a central location for all configuration values.
+ */
 public final class SimulationConfig {
     public static final double DISEASE_OUTBREAK_CHANCE = 0.4;
+    public static final double WEATHER_CHANGE_CHANCE = 0.5;
     // config final values - to not change.
     private SimulationConfig() {
     }
@@ -12,6 +16,7 @@ public final class SimulationConfig {
     public static final double JERBOA_SPAWN = 0.20;
     public static final double BUSH_SPAWN = 0.30;
     public static final double NAKHLA_SPAWN = 0.15;
+
 
     // Species configs by role
     // SpeciesConfig(breedingAge, maxAge, breedingProbability, maxOffspring,
@@ -34,7 +39,7 @@ public final class SimulationConfig {
             2, 26, 4, 10);
 
     public static final SpeciesConfig JERBOA = new SpeciesConfig(
-            3, 100, 0.55, 7,
+            3, 100, 0.5, 7,
             2, 26, 4, 10);
 
     public static final SpeciesConfig CAMEL = new SpeciesConfig(

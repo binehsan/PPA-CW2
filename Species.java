@@ -3,7 +3,7 @@
  * state, and infection status.
  *
  * @author Faisal AlKhalifa and Muhammad Amen bin Ehsan
- * @version 7.0
+ * @version 1.0
  */
 public class Species {
     // The animal's position.
@@ -62,6 +62,7 @@ public class Species {
     /**
      * Return the energy value gained by eating this species.
      * By default, non-edible species return zero.
+     * Overridden in each species
      */
     public int getEnergyValue()
     {

@@ -4,7 +4,7 @@
  * that are found in the desert ecosystem.
  *
  * @author Faisal AlKhalifa and Muhammad Amen bin Ehsan
- * @version 7.0
+ * @version 1.0
  */
 public class Bush extends Plant {
 

@@ -3,7 +3,7 @@
  * harvested and may optionally block movement.
  *
  * @author Faisal AlKhalifa and Muhammad Amen bin Ehsan
- * @version 7.0
+ * @version 1.0
  */
 public abstract class Plant extends Species {
     private int harvests;
@@ -49,10 +49,5 @@ public abstract class Plant extends Species {
         return true;
     }
 
-    /**
-     * Infect the plant, reducing its energy value.
-     */
-    public void infect(){
-        energyValue = energyValue / 2;
-    }
+
 }

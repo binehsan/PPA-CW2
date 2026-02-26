@@ -4,7 +4,7 @@ import java.util.List;
  * Deals with the animals' ability to flee
  *
  * @author Faisal AlKhalifa and Muhammad Amen bin Ehsan
- * @version 7.0
+ * @version 1.0
  */
 public class AnimalFlee {
     /**
@@ -30,7 +30,7 @@ public class AnimalFlee {
                     if (!freeLocations.isEmpty()) {
                         animal.setLocation(freeLocations.removeFirst());
                     }
-                    // If no space to flee, stay put
+                    // If no space to flee, stay put, return true.
                     return true;
                 }
             }

@@ -2,8 +2,8 @@
  * The Nakhla plant in the simulation. This is a desert palm that can be
  * harvested for energy by herbivores.
  *
- * @author Faisal AlKhalifa and Muhammad Amen bin Ehsan
- * @version 7.0
+ * @author Faisal AlKhalifa and Muhammad Amen Ehsan
+ * @version 1.0
  */
 public class Nakhla extends Plant {
     /**

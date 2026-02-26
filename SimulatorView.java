@@ -11,8 +11,8 @@ import java.util.Map;
  * Colors for each type of species can be defined using the
  * setColor method.
  * 
- * @author David J. Barnes and Michael Kölling
- * @version 7.0
+ * @author Muhammad Amen Ehsan & Faisal AlKhalifa
+ * @version 1.0
  */
 public class SimulatorView extends JFrame {
     // Colors used for empty locations.
@@ -28,6 +28,7 @@ public class SimulatorView extends JFrame {
     private final FieldView fieldView;
     private final JLabel statisticsLabel;
     private final JPanel legendPanel;
+    private final JPanel statsPanel;
 
     // A map for storing colors for participants in the simulation
     private final Map<Class<?>, Color> colors;
@@ -57,7 +58,7 @@ public class SimulatorView extends JFrame {
         population = new JLabel(POPULATION_PREFIX, JLabel.CENTER);
         legendPanel = new JPanel();
         statisticsLabel = new JLabel("", JLabel.CENTER);
-        // checks
+
         population.setAlignmentX(Component.CENTER_ALIGNMENT);
         statisticsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         legendPanel.setBorder(new EmptyBorder(6, 6, 6, 6));
@@ -71,7 +72,7 @@ public class SimulatorView extends JFrame {
         legendPanel.add(createLegendEntry("Nakhla", getColor(Nakhla.class)));
         legendPanel.add(createLegendEntry("Infected", Color.black));
 
-        JPanel statsPanel = new JPanel();
+        statsPanel = new JPanel();
         statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
         statsPanel.add(population);
         statsPanel.add(statisticsLabel);
@@ -107,17 +108,6 @@ public class SimulatorView extends JFrame {
         row.add(Box.createRigidArea(new Dimension(6, 0)));
         row.add(textLabel);
         return row;
-    }
-
-    /**
-     * Placeholder for coloring a single location in the field view.
-     *
-     * @param location The location to color.
-     * @param black    The color to use.
-     */
-    public static void colorLocation(Location location, Color black) {
-        // color the box in location in the given color.
-
     }
 
     /**

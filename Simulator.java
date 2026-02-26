@@ -71,7 +71,7 @@ public class Simulator {
 
     /**
      * Run the simulation from its current state for a reasonably long
-     * period (4000 steps).
+     * period (360 steps).
      */
     public void runLongSimulation() {
 
@@ -104,10 +104,12 @@ public class Simulator {
         step++;
         TimePeriod currentTime = getTimePeriod();
 
+        // changes weather every hour with defined probability
         double weatherRoll = Randomizer.getRandom().nextDouble();
-        if (hour && weatherRoll < 0.5)
+        if (hour && weatherRoll < SimulationConfig.WEATHER_CHANGE_CHANCE)
             updateWeather();
 
+        // spreads disease every hour with defined probability, infecting all animals in a random region of the field
         double diseaseRoll = Randomizer.getRandom().nextDouble();
         if (hour && diseaseRoll < SimulationConfig.DISEASE_OUTBREAK_CHANCE) {
             Collection<Location> infectedLocations = field.getRandomRegion();
